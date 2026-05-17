@@ -70,7 +70,7 @@ Nine-module interactive course covering:
 - Motor pin assignments are fixed: M1 GP11/GP10, M2 GP13/GP12, M3 GP15/GP14, M4 GP18/GP19.
 - Positive command = IN1=duty, IN2=0. Negative command = IN1=0, IN2=duty.
 - UART Pico TX=GP8 → device RX; Pico RX=GP9 ← device TX. Always state direction explicitly.
-- IMU BNO055 on I2C0: SDA=GP0, SCL=GP1.
+- IMU BNO055 on GP0/GP1: use `SoftI2C(sda=Pin(0), scl=Pin(1), freq=10000)` — hardware I2C scans 0x28 but fails register reads with EIO on this setup. The `imu_bno055.py` helper handles this automatically.
 
 ## Gotchas
 
@@ -88,3 +88,5 @@ Nine-module interactive course covering:
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
 - Full wiring tables and motor layout diagram live in the Wiring Reference section of
   `artifacts/omni-v2/index.html` (search for `id="wiring"`)
+- BNO055 helper: `imu_bno055.py` (Module 8 lesson code) — uses `SoftI2C` at 10 kHz, registers
+  `CHIP_ID 0x00`, `OPR_MODE 0x3D`, `EULER_H_LSB 0x1A`, mode `NDOF 0x0C`

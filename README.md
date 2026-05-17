@@ -85,12 +85,17 @@ s4 = ( y + x) + rot   # M4 front-left
 
 ### IMU — BNO055
 
-| Signal | Pico pin | Notes              |
-|--------|----------|--------------------|
-| SDA    | GP0      | I2C0, address 0x28 |
-| SCL    | GP1      | I2C0               |
-| Power  | 3V3      |                    |
-| Ground | GND      | Shared rail        |
+| Signal | Pico pin | Notes                     |
+|--------|----------|---------------------------|
+| SDA    | GP0      | SoftI2C, address 0x28     |
+| SCL    | GP1      | SoftI2C at 10 000 Hz      |
+| Power  | 3V3      |                           |
+| Ground | GND      | Shared rail               |
+
+> **SoftI2C required.** Hardware I2C can scan the bus and see 0x28 but then fails register
+> reads with `OSError [Errno 5] EIO` on this Pico setup. `SoftI2C(sda=Pin(0), scl=Pin(1), freq=10000)`
+> is the tested working configuration. The `imu_bno055.py` helper (Module 8) handles this
+> automatically — do not swap in `I2C(0, ...)` without testing on real hardware first.
 
 ### Ball sensor ring / Nextion — UART1, 9600 baud
 

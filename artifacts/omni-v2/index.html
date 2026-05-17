@@ -1158,20 +1158,165 @@ while True:
       <div class="goals-box">
         <h4>&#127919; Learning goals</h4>
         <ul>
-          <li>Understand what an IMU is and what "heading" means</li>
+          <li>Wire the BNO055 IMU and verify it returns live heading readings</li>
+          <li>Understand why <code>SoftI2C</code> is used instead of hardware I2C on this setup</li>
           <li>Calculate the shortest angular error between current and target heading</li>
           <li>Turn that error into a <code>rot</code> correction value for <code>drive_xy_rot</code></li>
         </ul>
       </div>
 
+      <!-- Wiring -->
       <div class="explain-box">
-        <h4>How it works</h4>
+        <h4>Wiring the BNO055</h4>
+        <p>Connect the BNO055 breakout to the Pico:</p>
+        <ul style="margin:8px 0 0 18px;line-height:2.1">
+          <li><strong>SDA</strong> &rarr; GP0</li>
+          <li><strong>SCL</strong> &rarr; GP1</li>
+          <li><strong>VIN&nbsp;/&nbsp;VCC</strong> &rarr; 3V3 (the 3.3&nbsp;V pin on the Pico)</li>
+          <li><strong>GND</strong> &rarr; GND (shared ground rail)</li>
+        </ul>
+        <p style="margin-top:12px">
+          <strong>Why <code>SoftI2C</code> instead of hardware I2C?</strong>
+          Hardware I2C <em>can</em> scan the bus and see address&nbsp;0x28, but then
+          register reads fail with <code>OSError [Errno 5] EIO</code> on this Pico setup.
+          <code>SoftI2C</code> at a slow 10&nbsp;kHz frequency fixes the problem completely.
+        </p>
+      </div>
+
+      <!-- Step 1 — imu_bno055.py helper -->
+      <div class="explain-box" style="margin-top:14px">
+        <h4>Step 1 &mdash; Save <code>imu_bno055.py</code> to your Pico</h4>
         <p>
-          The <code>angle_error</code> function finds the shortest rotation needed to reach the
-          target. Without it, you might rotate the long way (e.g., +270&deg; instead of &minus;90&deg;).
-          The <code>heading_hold_rot</code> function scales that error into a <code>rot</code>
-          value. Positive error &rarr; rotate right; negative &rarr; rotate left.
-          The BNO055 IMU connects via I2C0: SDA on GP0, SCL on GP1.
+          This helper file lives alongside <code>main.py</code> on the Pico filesystem.
+          Copy it once; every lesson that needs the IMU just does
+          <code>from imu_bno055 import create_imu</code>.
+        </p>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython &mdash; imu_bno055.py</span>
+          <button class="copy-btn" data-copy-target="code-8-helper">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-change">&#128190; Save as <code style="background:none;color:inherit">imu_bno055.py</code> on the Pico &mdash; this is a helper file, not main.py</div>
+        <pre class="code-block" id="code-8-helper"># imu_bno055.py
+# BNO055 IMU driver for Raspberry Pi Pico.
+# Uses SoftI2C because hardware I2C can scan 0x28 but then fail
+# register reads with OSError [Errno 5] EIO on this setup.
+# SoftI2C at 10 kHz is reliable.
+
+from machine import Pin, SoftI2C
+import time
+
+# BNO055 register addresses
+CHIP_ID_REG  = 0x00
+OPR_MODE_REG = 0x3D
+PWR_MODE_REG = 0x3E
+PAGE_ID_REG  = 0x07
+SYS_TRIGGER  = 0x3F
+EULER_H_LSB  = 0x1A
+
+MODE_CONFIG  = 0x00   # configuration mode
+MODE_NDOF    = 0x0C   # nine-degrees-of-freedom fusion (gives heading)
+
+class BNO055:
+    def __init__(self, i2c, address=0x28):
+        self.i2c  = i2c
+        self.addr = address
+
+    def _write(self, reg, value):
+        self.i2c.writeto_mem(self.addr, reg, bytes([value]))
+
+    def _read(self, reg, n=1):
+        return self.i2c.readfrom_mem(self.addr, reg, n)
+
+    def begin(self):
+        chip_id = self._read(CHIP_ID_REG)[0]
+        if chip_id != 0xa0:
+            raise RuntimeError("BNO055 chip ID wrong: 0x{:02x}".format(chip_id))
+        self._write(OPR_MODE_REG, MODE_CONFIG)
+        time.sleep_ms(25)
+        self._write(SYS_TRIGGER, 0x20)   # software reset
+        time.sleep_ms(650)
+        self._write(PWR_MODE_REG, 0x00)  # normal power mode
+        self._write(PAGE_ID_REG, 0)      # select page 0
+        self._write(OPR_MODE_REG, MODE_NDOF)
+        time.sleep_ms(20)
+
+    def heading_deg(self):
+        # Euler heading: two bytes LSB-first, unit = 1/16 degree
+        data = self._read(EULER_H_LSB, 2)
+        raw = data[0] | (data[1] &lt;&lt; 8)
+        if raw &gt; 32767:
+            raw -= 65536
+        return raw / 16.0
+
+def create_imu():
+    """
+    Return a ready-to-use BNO055 on SoftI2C GP0/GP1 at 10 kHz.
+    Tries address 0x28 first, then 0x29.
+    Uses SoftI2C because hardware I2C may scan 0x28 but fail register
+    reads with OSError [Errno 5] EIO on this Pico setup.
+    """
+    i2c = SoftI2C(sda=Pin(0), scl=Pin(1), freq=10000)
+    found = i2c.scan()
+    print("I2C scan:", ["0x{:02x}".format(a) for a in found])
+    for addr in (0x28, 0x29):
+        if addr in found:
+            imu = BNO055(i2c, addr)
+            imu.begin()
+            print("BNO055 ready at 0x{:02x}, chip ID 0xa0".format(addr))
+            return imu
+    raise RuntimeError("BNO055 not found — check wiring and power")</pre>
+      </div>
+
+      <!-- Step 2 — IMU serial test -->
+      <div class="explain-box" style="margin-top:14px">
+        <h4>Step 2 &mdash; Test the IMU before using it in the robot</h4>
+        <p>
+          Run this standalone test first to confirm you are getting live heading readings.
+          Expected output when everything is wired correctly:
+        </p>
+        <pre style="background:var(--surface3);border-radius:6px;padding:10px 14px;font-family:var(--mono);font-size:12px;color:#a0e878;margin-top:8px;overflow-x:auto">I2C scan: ['0x28']
+BNO055 ready at 0x28, chip ID 0xa0
+Heading: 12.4 deg
+Heading: 12.5 deg
+...
+Heading: 358.8 deg
+Heading: 0.2 deg     &larr; 359 &rarr; 0 wraparound is completely normal</pre>
+        <p style="margin-top:12px"><strong>Troubleshooting:</strong></p>
+        <ul style="margin:6px 0 0 18px;line-height:2.0">
+          <li><strong>Scan returns <code>[]</code></strong> &mdash; check SDA/SCL connections and that VIN is wired to 3V3.</li>
+          <li><strong>Scan shows <code>0x28</code> but reads fail with EIO</strong> &mdash; you are using hardware I2C somewhere. Use <code>SoftI2C</code> as shown in <code>imu_bno055.py</code>.</li>
+          <li><strong>Heading stuck at 0.0</strong> &mdash; IMU is still booting; wait about 1&nbsp;s after power-on before reading.</li>
+        </ul>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython &mdash; IMU test (main.py)</span>
+          <button class="copy-btn" data-copy-target="code-8-test">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole <code style="background:none;color:inherit">main.py</code> with this test &mdash; you also need <code style="background:none;color:inherit">imu_bno055.py</code> saved on the Pico</div>
+        <pre class="code-block" id="code-8-test">import time
+from imu_bno055 import create_imu
+
+imu = create_imu()
+
+while True:
+    heading = imu.heading_deg()
+    print("Heading: {:.1f} deg".format(heading))
+    time.sleep(0.2)</pre>
+      </div>
+
+      <!-- Step 3 — heading correction logic -->
+      <div class="explain-box" style="margin-top:14px">
+        <h4>Step 3 &mdash; Heading correction math</h4>
+        <p>
+          The <code>angle_error</code> function finds the <em>shortest</em> rotation needed to
+          reach the target. Without it you might rotate the long way (&plus;270&deg; instead of
+          &minus;90&deg;). The <code>heading_hold_rot</code> function scales that error into
+          a <code>rot</code> value. Positive error &rarr; rotate right; negative &rarr; rotate left.
         </p>
       </div>
 
@@ -1180,8 +1325,12 @@ while True:
           <span class="code-lang">MicroPython</span>
           <button class="copy-btn" data-copy-target="code-8">Copy Code</button>
         </div>
-        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole <code style="background:none;color:inherit">main.py</code> &mdash; you also need <code style="background:none;color:inherit">imu_bno055.py</code> on the Pico</div>
         <pre class="code-block" id="code-8">import time
+from imu_bno055 import create_imu
+
+imu = create_imu()
+
 def angle_error(current, target):
     error = target - current
     while error &gt; 180:
@@ -1189,20 +1338,19 @@ def angle_error(current, target):
     while error &lt; -180:
         error += 360
     return error
+
 def heading_hold_rot(current_heading, target_heading, gain=200):
     error = angle_error(current_heading, target_heading)
     rot = error * gain
     rot = max(-30000, min(30000, rot))
     return rot
-def get_imu_heading():
-    # BNO055 on I2C(0): SDA=GP0, SCL=GP1
-    # Replace this stub with real IMU code
-    return 0
-target_heading = 0
+
+target_heading = 0   # face 0 degrees (north / forward)
+
 while True:
-    current = get_imu_heading()
+    current = imu.heading_deg()
     rot = heading_hold_rot(current, target_heading)
-    print("Heading:", current, "Rot correction:", rot)
+    print("Heading: {:.1f}  Rot correction: {:.0f}".format(current, rot))
     time.sleep(0.1)</pre>
       </div>
 
@@ -1211,8 +1359,8 @@ while True:
         <p>
           Test <code>angle_error(350, 10)</code> in the REPL &mdash; it should return
           <code>20</code>, not <code>-340</code>. Also test <code>angle_error(10, 350)</code>
-          &mdash; it should return <code>-20</code>. Replace <code>get_imu_heading()</code>
-          with your real IMU library when you're ready.
+          &mdash; it should return <code>-20</code>. Then physically spin the robot and watch
+          the correction value flip sign as the heading crosses 0&deg;.
         </p>
       </div>
 
@@ -1257,6 +1405,10 @@ while True:
           <li>If ball found: drive toward it with <code>drive_angle</code> + rot correction</li>
           <li>If no ball: hold position and keep correcting heading only</li>
         </ol>
+        <p style="margin-top:10px">
+          &#128190; <strong>Two files on the Pico:</strong> copy <code>imu_bno055.py</code>
+          (from Module&nbsp;8) <em>and</em> <code>main.py</code> to the Pico before running.
+        </p>
       </div>
 
       <div class="code-block-wrap">
@@ -1264,8 +1416,9 @@ while True:
           <span class="code-lang">MicroPython</span>
           <button class="copy-btn" data-copy-target="code-9">Copy Code</button>
         </div>
-        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole <code style="background:none;color:inherit">main.py</code> &mdash; you also need <code style="background:none;color:inherit">imu_bno055.py</code> on the Pico</div>
         <pre class="code-block" id="code-9">from machine import Pin, PWM, UART
+from imu_bno055 import create_imu
 import math
 import time
 
@@ -1279,14 +1432,15 @@ class Motor:
     def run(self, speed):
         speed = max(-65535, min(65535, int(speed)))
         if speed &gt; 0:
-            # Positive command
+            # Positive command: IN1=duty, IN2=0
             self.a.duty_u16(speed)
             self.b.duty_u16(0)
         elif speed &lt; 0:
-            # Negative command
+            # Negative command: IN1=0, IN2=duty
             self.a.duty_u16(0)
             self.b.duty_u16(-speed)
         else:
+            # Coast to stop
             self.a.duty_u16(0)
             self.b.duty_u16(0)
 
@@ -1327,6 +1481,7 @@ def heading_hold_rot(current_heading, target_heading, gain=200):
     rot = max(-30000, min(30000, rot))
     return rot
 
+# UART1: ball sensor / Nextion — Pico TX GP8 -> device RX, Pico RX GP9 <- device TX
 ball_uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
 
 def read_ball():
@@ -1343,11 +1498,7 @@ def read_ball():
             return None
     return None
 
-def get_imu_heading():
-    # BNO055 on I2C(0): SDA=GP0, SCL=GP1
-    # Replace this stub with real IMU code
-    return 0
-
+# Motors: M1 front-right, M2 back-right, M3 back-left, M4 front-left
 M1 = Motor(11, 10)
 M2 = Motor(13, 12)
 M3 = Motor(15, 14)
@@ -1355,13 +1506,16 @@ M4 = Motor(18, 19)
 
 robot = OmniRobot(M1, M2, M3, M4)
 
+# IMU: BNO055 via SoftI2C on GP0/GP1 at 10 kHz (imu_bno055.py must be on the Pico)
+imu = create_imu()
+
 TARGET_HEADING = 0
 DRIVE_POWER = 30000
 
 while True:
     ball = read_ball()
-    imu = get_imu_heading()
-    rot = heading_hold_rot(imu, TARGET_HEADING)
+    current_heading = imu.heading_deg()
+    rot = heading_hold_rot(current_heading, TARGET_HEADING)
     if ball is None:
         robot.drive_xy_rot(0, 0, rot)
     elif ball == -1:
@@ -1374,10 +1528,10 @@ while True:
       <div class="challenge-box">
         <h4>&#128170; Mini challenge</h4>
         <p>
-          Replace <code>get_imu_heading()</code> with your real IMU library. Adjust
-          <code>DRIVE_POWER</code> &mdash; higher values are faster but harder to control near
-          the ball. Try changing the <code>gain</code> in <code>heading_hold_rot</code>: too low
-          and the robot drifts; too high and it wobbles. Find the sweet spot!
+          Adjust <code>DRIVE_POWER</code> &mdash; higher values are faster but harder to
+          control near the ball. Try changing the <code>gain</code> in
+          <code>heading_hold_rot</code>: too low and the robot drifts; too high and it
+          wobbles. Find the sweet spot!
         </p>
       </div>
 
