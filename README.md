@@ -1,12 +1,24 @@
-# Omni Robot Tutor
+# Robotics Academy — Omni & Maze Rescue
 
-An interactive, browser-based learning platform that teaches a 16-year-old how to code an
-X-configuration omni-wheel robot in MicroPython on a Raspberry Pi Pico. Nine progressive
-modules take the reader from blinking an LED all the way to autonomous ball-chasing with
-gyroscope heading hold.
+A two-course, browser-based robotics learning hub for students aged 14–17. The landing page
+lets you pick between two complete courses, each with sidebar navigation, module cards,
+progress tracking, and copyable code examples.
 
 **Live app:** https://omni-robot-tutor.replit.app/
 **Source:** https://github.com/jwrig318-ops/Omni-Robot-Tutor
+
+---
+
+## Courses
+
+### Omni Robot Course (9 modules)
+Teaches how to build and code an X-configuration omni-wheel robot in MicroPython on a
+Raspberry Pi Pico, from first PWM blink to autonomous ball chasing with IMU heading hold.
+
+### Maze Rescue Course (6 modules + Python pathway)
+Teaches how to program a LEGO SPIKE robot to navigate a RoboCup Rescue maze, detect
+coloured victims, and score competition points. Includes a 19-stage Python lesson pathway
+(7 phases) and a competition checklist.
 
 ---
 
@@ -14,11 +26,11 @@ gyroscope heading hold.
 
 ```
 artifacts/
-  omni-v2/           Static Vite site — the 9-module learning platform
-    index.html         All lesson content, wiring diagrams, code examples
+  omni-v2/           Static Vite site — both courses live here
+    index.html         Hub landing + Omni course + Maze course (all in one SPA)
     public/
-      styles.css       Dark-theme stylesheet
-      app.js           Syntax highlighting, navigation, progress, copy buttons
+      styles.css       Dark-theme stylesheet (hub + omni + maze)
+      app.js           Hub routing, syntax highlighting, navigation, progress, copy buttons
       favicon.svg
   api-server/        Express 5 API server (port 5000)
     src/routes/
@@ -39,7 +51,7 @@ scripts/             Replit helper scripts and post-merge automation
 
 ---
 
-## Motor wiring
+## Omni course — motor wiring
 
 ### Motor positions
 
@@ -81,7 +93,7 @@ s4 = ( y + x) + rot   # M4 front-left
 
 ---
 
-## Sensor & communication wiring
+## Omni course — sensor & communication wiring
 
 ### IMU — BNO055
 
@@ -112,7 +124,7 @@ s4 = ( y + x) + rot   # M4 front-left
 
 ---
 
-## Power and grounding
+## Power and grounding (Omni course)
 
 - Motor VM/battery power is **separate** from Pico logic power (VSYS/3V3).
 - All grounds must share a single rail: Pico GND, each DRV8871 GND, IMU GND, connector GND.
@@ -146,10 +158,10 @@ pnpm --filter @workspace/omni-v2 run dev
 ### Other commands
 
 ```bash
-pnpm run typecheck                         # full TypeScript check across all packages
-pnpm run build                             # typecheck + build
-pnpm --filter @workspace/api-spec run codegen   # regenerate hooks and Zod schemas from OpenAPI spec
-pnpm --filter @workspace/db run push       # push DB schema changes (dev only)
+pnpm run typecheck                              # full TypeScript check across all packages
+pnpm run build                                 # typecheck + build
+pnpm --filter @workspace/api-spec run codegen  # regenerate hooks and Zod schemas from OpenAPI spec
+pnpm --filter @workspace/db run push           # push DB schema changes (dev only)
 ```
 
 ### Stack
