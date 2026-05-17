@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Omni V2 Learning Platform</title>
+  <meta name="description" content="Learn to code an X-configuration omni robot with MicroPython on Raspberry Pi Pico." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">&#9881;</div>
+        <div class="brand-text">
+          <span class="brand-title">Omni V2</span>
+          <span class="brand-sub">Learning Platform</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-label">
+        <span id="progress-text">0 / 9 modules</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <nav class="module-nav">
+      <a class="nav-item" href="#" data-target="home">
+        <span class="nav-icon">&#8962;</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-1">
+        <span class="nav-check" data-module="1">&#9711;</span>
+        <span class="nav-label">1. Your First Motor Pin</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-2">
+        <span class="nav-check" data-module="2">&#9711;</span>
+        <span class="nav-label">2. Forward, reverse, stop</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-3">
+        <span class="nav-check" data-module="3">&#9711;</span>
+        <span class="nav-label">3. Moving in a Direction</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-4">
+        <span class="nav-check" data-module="4">&#9711;</span>
+        <span class="nav-label">4. Cleaning Up with Classes</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-5">
+        <span class="nav-check" data-module="5">&#9711;</span>
+        <span class="nav-label">5. The omni-drive brain</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-6">
+        <span class="nav-check" data-module="6">&#9711;</span>
+        <span class="nav-label">6. Convert angles into movement</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-7">
+        <span class="nav-check" data-module="7">&#9711;</span>
+        <span class="nav-label">7. Read the ball sensor ring</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-8">
+        <span class="nav-check" data-module="8">&#9711;</span>
+        <span class="nav-label">8. Add the IMU &amp; hold direction</span>
+      </a>
+      <a class="nav-item" href="#" data-target="mod-9">
+        <span class="nav-check" data-module="9">&#9711;</span>
+        <span class="nav-label">9. Build the full robot program</span>
+      </a>
+      <div class="nav-sep"></div>
+      <a class="nav-item" href="#" data-target="wiring">
+        <span class="nav-icon">&#9889;</span>
+        <span class="nav-label">Wiring Reference</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="reset-btn" id="reset-btn">&#8635; Reset Progress</button>
+    </div>
+  </aside>
+
+  <!-- Mobile top bar -->
+  <div class="topbar">
+    <button class="hamburger" id="hamburger">&#9776;</button>
+    <span class="topbar-title">Omni V2</span>
+    <span id="topbar-pct" class="topbar-pct">0%</span>
+  </div>
+
+  <!-- Main content -->
+  <main class="content">
+
+  <!-- ===== SHARED SVG SYMBOL: omni motor layout top-view ===== -->
+  <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="omni-motor-layout" viewBox="0 0 420 470">
+        <!-- FRONT label + downward arrow -->
+        <text x="210" y="24" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#5b8fff" letter-spacing="1.5">FRONT</text>
+        <line x1="210" y1="29" x2="210" y2="57" stroke="#5b8fff" stroke-width="1.5"/>
+        <polygon points="210,62 204,50 216,50" fill="#5b8fff"/>
+
+        <!-- Robot body -->
+        <circle cx="210" cy="240" r="111" fill="#0a0f1a" opacity="0.7"/>
+        <circle cx="210" cy="240" r="108" fill="#0f172a" stroke="#2d3f5e" stroke-width="2"/>
+        <circle cx="210" cy="240" r="72" fill="none" stroke="#1e2d45" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="210" y1="140" x2="210" y2="340" stroke="#1a2744" stroke-width="1"/>
+        <line x1="110" y1="240" x2="310" y2="240" stroke="#1a2744" stroke-width="1"/>
+
+        <!-- Connection lines from body edge to wheel centres -->
+        <line x1="286" y1="164" x2="316" y2="134" stroke="#263250" stroke-width="2"/>
+        <line x1="286" y1="316" x2="316" y2="346" stroke="#263250" stroke-width="2"/>
+        <line x1="134" y1="316" x2="104" y2="346" stroke="#263250" stroke-width="2"/>
+        <line x1="134" y1="164" x2="104" y2="134" stroke="#263250" stroke-width="2"/>
+
+        <!-- M1 FRONT-RIGHT (cyan) — rolling axis NW-SE, rotate(-45) -->
+        <g transform="translate(325,120) rotate(-45)">
+          <rect x="-30" y="-13" width="60" height="26" rx="5" fill="#0c2233" stroke="#22d3ee" stroke-width="1.8"/>
+          <line x1="-20" y1="-13" x2="-20" y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="-10" y1="-13" x2="-10" y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="0"   y1="-13" x2="0"   y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="10"  y1="-13" x2="10"  y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="20"  y1="-13" x2="20"  y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+        </g>
+        <rect x="340" y="52" width="70" height="23" rx="11.5" fill="#051e2e" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="375" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#22d3ee">M1</text>
+        <text x="375" y="87" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#64748b">front-right</text>
+
+        <!-- M2 BACK-RIGHT (cyan) — rolling axis NE-SW, rotate(45) -->
+        <g transform="translate(325,360) rotate(45)">
+          <rect x="-30" y="-13" width="60" height="26" rx="5" fill="#0c2233" stroke="#22d3ee" stroke-width="1.8"/>
+          <line x1="-20" y1="-13" x2="-20" y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="-10" y1="-13" x2="-10" y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="0"   y1="-13" x2="0"   y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="10"  y1="-13" x2="10"  y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+          <line x1="20"  y1="-13" x2="20"  y2="13" stroke="#22d3ee" stroke-width="0.7" opacity="0.5"/>
+        </g>
+        <rect x="340" y="395" width="70" height="23" rx="11.5" fill="#051e2e" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="375" y="411" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#22d3ee">M2</text>
+        <text x="375" y="430" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#64748b">back-right</text>
+
+        <!-- M3 BACK-LEFT (green) — rolling axis NW-SE, rotate(-45) -->
+        <g transform="translate(95,360) rotate(-45)">
+          <rect x="-30" y="-13" width="60" height="26" rx="5" fill="#0a2218" stroke="#4ade80" stroke-width="1.8"/>
+          <line x1="-20" y1="-13" x2="-20" y2="13" stroke="#4ade80" stroke-width="0.7" opacity="0.5"/>
+          <line x1="-10" y1="-13" x2="-10" y2="13" stroke="#4ade80" stroke-width="0.7" opacity="0.5"/>
+          <line x1="0"   y1="-13" x2="0"   y2="13" stroke="#4ade80" stroke-width="0.7" opacity="0.5"/>
+          <line x1="10"  y1="-13" x2="10"  y2="13" stroke="#4ade80" stroke-width="0.7" opacity="0.5"/>
+          <line x1="20"  y1="-13" x2="20"  y2="13" stroke="#4ade80" stroke-width="0.7" opacity="0.5"/>
+        </g>
+        <rect x="10" y="395" width="70" height="23" rx="11.5" fill="#071a10" stroke="#4ade80" stroke-width="1.5"/>
+        <text x="45" y="411" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#4ade80">M3</text>
+        <text x="45" y="430" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#64748b">back-left</text>
+
+        <!-- M4 FRONT-LEFT (yellow) — rolling axis NE-SW, rotate(45) -->
+        <g transform="translate(95,120) rotate(45)">
+          <rect x="-30" y="-13" width="60" height="26" rx="5" fill="#1a1500" stroke="#facc15" stroke-width="1.8"/>
+          <line x1="-20" y1="-13" x2="-20" y2="13" stroke="#facc15" stroke-width="0.7" opacity="0.5"/>
+          <line x1="-10" y1="-13" x2="-10" y2="13" stroke="#facc15" stroke-width="0.7" opacity="0.5"/>
+          <line x1="0"   y1="-13" x2="0"   y2="13" stroke="#facc15" stroke-width="0.7" opacity="0.5"/>
+          <line x1="10"  y1="-13" x2="10"  y2="13" stroke="#facc15" stroke-width="0.7" opacity="0.5"/>
+          <line x1="20"  y1="-13" x2="20"  y2="13" stroke="#facc15" stroke-width="0.7" opacity="0.5"/>
+        </g>
+        <rect x="10" y="52" width="70" height="23" rx="11.5" fill="#130f00" stroke="#facc15" stroke-width="1.5"/>
+        <text x="45" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#facc15">M4</text>
+        <text x="45" y="87" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#64748b">front-left</text>
+
+        <!-- Robot centre label -->
+        <text x="210" y="234" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#334155" letter-spacing="2">OMNI</text>
+        <text x="210" y="250" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#334155" letter-spacing="2">ROBOT</text>
+
+        <!-- REAR label -->
+        <text x="210" y="462" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#475569" letter-spacing="1.5">REAR</text>
+      </symbol>
+    </defs>
+  </svg>
+
+    <!-- HOME -->
+    <section class="page active" id="home">
+      <div class="hero">
+        <div class="hero-badge">Raspberry Pi Pico &middot; MicroPython &middot; X-Config Omni</div>
+        <h1 class="hero-title">Build a Robot That<br /><span class="highlight">Thinks in 3 Axes</span></h1>
+        <p class="hero-tagline">
+          The ball ring says where to move, the IMU says where the robot is facing,
+          and the omni-drive math turns that into 4 wheel speeds.
+        </p>
+        <div class="hero-formula">
+          <code>x&nbsp;=&nbsp;sin(angle)&nbsp;&times;&nbsp;power &nbsp;&nbsp;&nbsp; y&nbsp;=&nbsp;cos(angle)&nbsp;&times;&nbsp;power</code>
+        </div>
+      </div>
+
+      <div class="omni-layout-wrap">
+        <div class="omni-layout-title">Motor Layout &mdash; Top View</div>
+        <figure class="omni-layout-fig">
+          <svg viewBox="0 0 420 470" role="img" aria-label="Top-down view of the omni robot. FRONT is at the top. M1 (cyan) is front-right, M2 (cyan) is back-right, M3 (green) is back-left, M4 (yellow) is front-left. Each wheel block is angled at 45 degrees to show its rolling direction.">
+            <use href="#omni-motor-layout"/>
+          </svg>
+        </figure>
+        <p class="omni-layout-caption">
+          These motor numbers are used in every equation. <strong style="color:#22d3ee">M1 &amp; M2</strong> are the right-side motors;
+          <strong style="color:#4ade80">M3</strong> is back-left; <strong style="color:#facc15">M4</strong> is front-left.
+          The striped wheel blocks show each wheel&rsquo;s rolling axis.
+        </p>
+      </div>
+
+      <div class="modules-grid">
+        <div class="module-card" data-goto="mod-1">
+          <span class="mc-num">01</span>
+          <h3>Your First Motor Pin</h3>
+          <p>Set up two PWM inputs on a DRV8871 driver. Make one motor spin with just a few lines.</p>
+        </div>
+        <div class="module-card" data-goto="mod-2">
+          <span class="mc-num">02</span>
+          <h3>Forward, reverse, stop</h3>
+          <p>Wrap the pin calls into simple functions so you can drive without repeating yourself.</p>
+        </div>
+        <div class="module-card" data-goto="mod-3">
+          <span class="mc-num">03</span>
+          <h3>Moving in a Direction</h3>
+          <p>Scale up to four motors using plain variables and functions — no classes yet.</p>
+        </div>
+        <div class="module-card" data-goto="mod-4">
+          <span class="mc-num">04</span>
+          <h3>Cleaning Up with Classes</h3>
+          <p>Replace the eight motor variables with a single reusable <code>Motor</code> class.</p>
+        </div>
+        <div class="module-card" data-goto="mod-5">
+          <span class="mc-num">05</span>
+          <h3>The omni-drive brain</h3>
+          <p>Understand x, y, and rot. Implement the four core motor equations.</p>
+        </div>
+        <div class="module-card" data-goto="mod-6">
+          <span class="mc-num">06</span>
+          <h3>Convert angles into movement</h3>
+          <p>Turn a compass angle into x/y movement with sin and cos.</p>
+        </div>
+        <div class="module-card" data-goto="mod-7">
+          <span class="mc-num">07</span>
+          <h3>Read the ball sensor ring</h3>
+          <p>Parse UART data from the ball ring and extract heading degrees.</p>
+        </div>
+        <div class="module-card" data-goto="mod-8">
+          <span class="mc-num">08</span>
+          <h3>Add the IMU</h3>
+          <p>Use the gyroscope heading to keep the robot pointing forward.</p>
+        </div>
+        <div class="module-card" data-goto="mod-9">
+          <span class="mc-num">09</span>
+          <h3>Full robot program</h3>
+          <p>Combine everything into one loop that chases the ball and holds heading.</p>
+        </div>
+        <div class="module-card" data-goto="wiring">
+          <span class="mc-num mc-ref">REF</span>
+          <h3>Wiring Reference</h3>
+          <p>Pin maps, motor arrangement diagram, DRV8871 notes, and power/grounding rules.</p>
+        </div>
+      </div>
+
+      <div class="concept-row">
+        <div class="concept-box">
+          <div class="concept-icon">&#11044;</div>
+          <strong>Ball sensor ring</strong>
+          <p>Detects the infrared ball and returns its angle (0&ndash;359&deg;).</p>
+        </div>
+        <div class="concept-box">
+          <div class="concept-icon">&#9654;</div>
+          <strong>IMU (gyroscope)</strong>
+          <p>Tells you which direction the robot is currently facing.</p>
+        </div>
+        <div class="concept-box">
+          <div class="concept-icon">&#10227;</div>
+          <strong>Omni-drive math</strong>
+          <p>Converts (x, y, rot) into four independent wheel speeds in real time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 1 -->
+    <section class="page" id="mod-1">
+      <div class="module-header">
+        <span class="module-number">Module 01</span>
+        <h2>Your First Motor Pin</h2>
+        <p class="module-intro">
+          Before we think about four wheels or fancy classes, let's get one motor spinning with the
+          absolute minimum code. The DRV8871 driver takes <strong>two PWM inputs</strong>
+          (IN1 and IN2). One carrying duty drives the motor one way; the other carrying duty
+          drives it the other way. Both at zero lets the motor coast.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Understand what GPIO pins are and how PWM signals work</li>
+          <li>Understand how two PWM inputs together control direction and speed on a DRV8871</li>
+          <li>Make a single motor spin at ~50% speed with just a few lines of code</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>What's a pin?</h4>
+        <p>
+          Your Raspberry Pi Pico has physical legs called <strong>GPIO pins</strong>.
+          We put a <strong>PWM signal</strong> on them &mdash; the pin rapidly switches on and
+          off thousands of times per second. The fraction of time it stays on is the
+          <em>duty cycle</em>. The DRV8871 driver has two PWM inputs, <strong>IN1</strong>
+          and <strong>IN2</strong>:
+        </p>
+        <ul style="margin-top:8px">
+          <li>IN1&nbsp;=&nbsp;duty, IN2&nbsp;=&nbsp;0 &rarr; motor spins <strong>one way</strong></li>
+          <li>IN1&nbsp;=&nbsp;0, IN2&nbsp;=&nbsp;duty &rarr; motor spins <strong>the other way</strong></li>
+          <li>IN1&nbsp;=&nbsp;0, IN2&nbsp;=&nbsp;0 &rarr; motor <strong>coasts</strong> to a stop</li>
+        </ul>
+        <p style="margin-top:12px">
+          <strong>PWM duty range</strong> in MicroPython (<code>duty_u16</code>):
+        </p>
+        <ul style="margin-top:8px">
+          <li><code>duty_u16(0)</code> &mdash; always off &mdash; no drive</li>
+          <li><code>duty_u16(32768)</code> &mdash; on half the time &mdash; ~50% speed</li>
+          <li><code>duty_u16(65535)</code> &mdash; always on &mdash; full speed</li>
+        </ul>
+        <p style="margin-top:12px">
+          <code>65535</code> is the maximum a 16-bit value can hold
+          (that&rsquo;s 2<sup>16</sup> &minus; 1). MicroPython uses this range for PWM.
+        </p>
+      </div>
+
+      <div class="wiring-diagram" role="img" aria-label="Wiring diagram: Raspberry Pi Pico GP11 (IN1) and GP10 (IN2) connected as two PWM inputs to a DRV8871 motor driver which drives a DC motor">
+        <div class="wiring-diagram-title">&#128268; Wiring diagram — one motor (M1 front-right, DRV8871)</div>
+        <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" class="wiring-svg">
+
+          <!-- ── Pico board ── -->
+          <rect x="18" y="38" width="118" height="154" rx="8" fill="#1a1e29" stroke="#343a52" stroke-width="1.5"/>
+          <text x="77" y="58" text-anchor="middle" class="wd-board-label">Raspberry Pi Pico</text>
+
+          <!-- Pin dots on Pico right edge -->
+          <!-- VSYS (5 V from USB) -->
+          <circle cx="136" cy="82"  r="5" fill="#ff7b47"/>
+          <text x="124" y="86" text-anchor="end" class="wd-pin-label" fill="#ff7b47">VSYS</text>
+
+          <!-- GND -->
+          <circle cx="136" cy="106" r="5" fill="#9aa3bc"/>
+          <text x="124" y="110" text-anchor="end" class="wd-pin-label" fill="#9aa3bc">GND</text>
+
+          <!-- GP11 PWM → IN1 -->
+          <circle cx="136" cy="132" r="5" fill="#5b8fff"/>
+          <text x="124" y="136" text-anchor="end" class="wd-pin-label" fill="#5b8fff">GP11</text>
+
+          <!-- GP10 PWM → IN2 -->
+          <circle cx="136" cy="158" r="5" fill="#3ecf8e"/>
+          <text x="124" y="162" text-anchor="end" class="wd-pin-label" fill="#3ecf8e">GP10</text>
+
+          <!-- ── DRV8871 motor driver ── -->
+          <rect x="288" y="38" width="162" height="154" rx="8" fill="#1a1e29" stroke="#343a52" stroke-width="1.5"/>
+          <text x="369" y="58" text-anchor="middle" class="wd-board-label">DRV8871 Driver</text>
+
+          <!-- DRV8871 left-side input pins -->
+          <!-- VCC (logic power) ← VSYS -->
+          <circle cx="288" cy="82"  r="5" fill="#ff7b47"/>
+          <text x="300" y="86" class="wd-pin-small" fill="#ff7b47">VCC</text>
+
+          <!-- GND -->
+          <circle cx="288" cy="106" r="5" fill="#9aa3bc"/>
+          <text x="300" y="110" class="wd-pin-small" fill="#9aa3bc">GND</text>
+
+          <!-- IN1 ← GP11 (PWM) -->
+          <circle cx="288" cy="132" r="5" fill="#5b8fff"/>
+          <text x="300" y="136" class="wd-pin-small" fill="#5b8fff">IN1</text>
+
+          <!-- IN2 ← GP10 (PWM) -->
+          <circle cx="288" cy="158" r="5" fill="#3ecf8e"/>
+          <text x="300" y="162" class="wd-pin-small" fill="#3ecf8e">IN2</text>
+
+          <!-- DRV8871 right-side output pins -->
+          <circle cx="450" cy="119" r="5" fill="#f5c842"/>
+          <text x="438" y="113" text-anchor="end" class="wd-pin-small" fill="#f5c842">OUT1</text>
+
+          <circle cx="450" cy="143" r="5" fill="#f5c842"/>
+          <text x="438" y="157" text-anchor="end" class="wd-pin-small" fill="#f5c842">OUT2</text>
+
+          <!-- ── Motor ── -->
+          <circle cx="600" cy="131" r="52" fill="#1a1e29" stroke="#343a52" stroke-width="1.5"/>
+          <!-- Motor symbol inner circle -->
+          <circle cx="600" cy="131" r="36" fill="none" stroke="#343a52" stroke-width="1" stroke-dasharray="4 3"/>
+          <!-- M label -->
+          <text x="600" y="127" text-anchor="middle" class="wd-motor-m">M</text>
+          <text x="600" y="145" text-anchor="middle" class="wd-board-label">DC Motor</text>
+          <!-- Motor terminals on left side -->
+          <circle cx="548" cy="119" r="5" fill="#f5c842"/>
+          <circle cx="548" cy="143" r="5" fill="#f5c842"/>
+
+          <!-- ── Wires ── -->
+
+          <!-- VSYS Pico → VCC DRV8871 (orange) -->
+          <polyline points="136,82 212,82 212,82 288,82"
+                    fill="none" stroke="#ff7b47" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- GND Pico → GND DRV8871 (gray) -->
+          <polyline points="136,106 212,106 288,106"
+                    fill="none" stroke="#9aa3bc" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- GP11 → IN1 (blue, PWM) -->
+          <polyline points="136,132 212,132 288,132"
+                    fill="none" stroke="#5b8fff" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- GP10 → IN2 (green, PWM) -->
+          <polyline points="136,158 212,158 288,158"
+                    fill="none" stroke="#3ecf8e" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- OUT1 → Motor terminal 1 (yellow) -->
+          <polyline points="450,119 499,119 499,119 548,119"
+                    fill="none" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- OUT2 → Motor terminal 2 (yellow) -->
+          <polyline points="450,143 499,143 548,143"
+                    fill="none" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- ── Wire labels ── -->
+          <text x="212" y="127" text-anchor="middle" class="wd-wire-label" fill="#5b8fff">PWM</text>
+          <text x="212" y="173" text-anchor="middle" class="wd-wire-label" fill="#3ecf8e">PWM</text>
+        </svg>
+
+        <div class="wiring-legend">
+          <span class="wl-item"><span class="wl-dot" style="background:#5b8fff"></span>GP11 &rarr; IN1 &mdash; PWM input (IN1=duty, IN2=0 &rarr; spins one way)</span>
+          <span class="wl-item"><span class="wl-dot" style="background:#3ecf8e"></span>GP10 &rarr; IN2 &mdash; PWM input (IN1=0, IN2=duty &rarr; spins the other way)</span>
+          <span class="wl-item"><span class="wl-dot" style="background:#ff7b47"></span>VSYS &rarr; VCC &mdash; 5&nbsp;V logic power (Pico VSYS carries USB 5&nbsp;V)</span>
+          <span class="wl-item"><span class="wl-dot" style="background:#9aa3bc"></span>GND shared between Pico and driver</span>
+        </div>
+        <p class="wiring-note">&#9432; Connect the motor&rsquo;s power supply (e.g. a separate battery pack) to the DRV8871 VM pin &mdash; do not use VSYS to drive the motor itself.</p>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-1">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-1">from machine import Pin, PWM
+from time import sleep
+# M1 front-right: GP11=IN1, GP10=IN2
+in1 = PWM(Pin(11))
+in2 = PWM(Pin(10))
+in1.freq(1000)
+in2.freq(1000)
+# Spin one way: IN1=duty, IN2=0
+in1.duty_u16(32768)
+in2.duty_u16(0)
+while True:
+    sleep(1)</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Change <code>in1.duty_u16(32768)</code> to <code>in1.duty_u16(65535)</code> and run
+          it again &mdash; the motor should be noticeably faster. Set both inputs to
+          <code>duty_u16(0)</code> to let the motor coast to a stop. To spin it the other way,
+          swap the two lines: set <code>in1.duty_u16(0)</code> and
+          <code>in2.duty_u16(32768)</code> &mdash; the motor should now reverse.
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="1" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-2">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 2 -->
+    <section class="page" id="mod-2">
+      <div class="module-header">
+        <span class="module-number">Module 02</span>
+        <h2>Forward, reverse, stop</h2>
+        <p class="module-intro">
+          Typing out the same pin calls every time you want to change direction is repetitive
+          and error-prone. Let's wrap those lines into <strong>functions</strong> &mdash; named
+          chunks of code you can call whenever you need them. No classes yet, just plain functions.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Understand what a function is and why it removes repetition</li>
+          <li>Write <code>motor_clockwise</code>, <code>motor_anticlockwise</code>, and <code>motor_stop</code></li>
+          <li>Call the functions in sequence with pauses to see each action</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>How it works</h4>
+        <p>
+          We still use the same two pins from Module 1: IN1 on GP11 and IN2 on GP10, both
+          as PWM outputs. The difference now is that we wrap those calls inside named functions.
+          To go <strong>clockwise</strong>, set IN2 to a duty value and IN1 to zero. To go
+          <strong>anti-clockwise</strong>, swap them: IN2 to zero and IN1 to the duty value.
+          To <strong>stop</strong>, set both to zero.
+        </p>
+        <p style="margin-top:12px">
+          The <code>duty</code> parameter lets you pass in any value from <code>0</code> to
+          <code>65535</code>, so you can go slow or fast without changing the function itself.
+        </p>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-2">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-2">from machine import Pin, PWM
+from time import sleep
+# M1 front-right: GP11=IN1, GP10=IN2
+in1 = PWM(Pin(11))
+in2 = PWM(Pin(10))
+in1.freq(1000)
+in2.freq(1000)
+def motor_clockwise(duty):
+    in1.duty_u16(0)
+    in2.duty_u16(duty)
+def motor_anticlockwise(duty):
+    in1.duty_u16(duty)
+    in2.duty_u16(0)
+def motor_stop():
+    in1.duty_u16(0)
+    in2.duty_u16(0)
+motor_clockwise(40000)
+sleep(2)
+motor_anticlockwise(40000)
+sleep(2)
+motor_stop()</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Try ramping the speed up smoothly: use a <code>for</code> loop that starts at
+          <code>0</code> and steps up to <code>65535</code> in increments of <code>1000</code>,
+          calling <code>motor_clockwise(duty)</code> each time with a tiny <code>sleep(0.02)</code>
+          between steps. Can you make the motor accelerate gradually then slow back down again?
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="2" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-3">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 3 — Move all four motors (no classes) -->
+    <section class="page" id="mod-3">
+      <div class="module-header">
+        <span class="module-number">Module 03</span>
+        <h2>Moving in a Direction</h2>
+        <p class="module-intro">
+          One motor works — now let's connect all four. Each DRV8871 driver needs
+          <strong>two PWM inputs</strong> (IN1 and IN2), so we now have eight PWM objects in
+          total. We'll use the same pattern from Module 2, just scaled up. No classes yet.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Set up eight PWM objects (IN1 + IN2 for each of the four motors)</li>
+          <li>Write functions that move all four wheels together to translate the robot</li>
+          <li>Notice why having eight loose variables starts to feel messy</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>How it works</h4>
+        <p>
+          For an X-config omni robot, driving <strong>forward</strong> uses a coordinated
+          four-wheel pattern. On Jay&rsquo;s tested wiring, M1 and M2 (right side) receive
+          the <strong>negative command</strong> (<code>a=0, b=duty</code>) while M3 and M4
+          (left side) receive the <strong>positive command</strong> (<code>a=duty, b=0</code>).
+          Together, those opposing commands push the robot straight forward instead of spinning.
+          Driving <strong>right</strong> works the same idea diagonally: opposite pairs of
+          wheels contribute in opposite directions, sliding the robot sideways without turning.
+        </p>
+        <p style="margin-top:12px">
+          Right now we have eight separate PWM objects (<code>m1a</code>&ndash;<code>m4b</code>).
+          It works, but it&rsquo;s already getting long. Module 4 will show you a much cleaner way.
+        </p>
+      </div>
+
+      <div class="omni-layout-callout">
+        <figure class="omni-layout-fig" aria-hidden="true">
+          <svg viewBox="0 0 420 470"><use href="#omni-motor-layout"/></svg>
+        </figure>
+        <div class="omni-layout-callout-text">
+          <strong>Motor numbering used in this code:</strong> <span style="color:#22d3ee">M1</span> front-right &middot;
+          <span style="color:#22d3ee">M2</span> back-right &middot;
+          <span style="color:#4ade80">M3</span> back-left &middot;
+          <span style="color:#facc15">M4</span> front-left.
+          M1 and M2 are wired on the right side of the robot; M3 and M4 on the left.
+          The <code>forward()</code> function below uses these positions to push the robot straight.
+        </div>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-3">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-3">from machine import Pin, PWM
+from time import sleep
+# Motor 1 — front-right  GP11=IN1  GP10=IN2
+m1a = PWM(Pin(11)); m1b = PWM(Pin(10))
+m1a.freq(1000);     m1b.freq(1000)
+# Motor 2 — back-right   GP13=IN1  GP12=IN2
+m2a = PWM(Pin(13)); m2b = PWM(Pin(12))
+m2a.freq(1000);     m2b.freq(1000)
+# Motor 3 — back-left    GP15=IN1  GP14=IN2
+m3a = PWM(Pin(15)); m3b = PWM(Pin(14))
+m3a.freq(1000);     m3b.freq(1000)
+# Motor 4 — front-left   GP18=IN1  GP19=IN2
+m4a = PWM(Pin(18)); m4b = PWM(Pin(19))
+m4a.freq(1000);     m4b.freq(1000)
+def stop_all():
+    for p in [m1a, m1b, m2a, m2b, m3a, m3b, m4a, m4b]:
+        p.duty_u16(0)
+def drive_forward(duty):
+    m1a.duty_u16(0);    m1b.duty_u16(duty) # front-right forward contribution
+    m2a.duty_u16(0);    m2b.duty_u16(duty) # back-right forward contribution
+    m3a.duty_u16(duty); m3b.duty_u16(0)    # back-left forward contribution
+    m4a.duty_u16(duty); m4b.duty_u16(0)    # front-left forward contribution
+def drive_backward(duty):
+    m1a.duty_u16(duty); m1b.duty_u16(0)    # front-right backward contribution
+    m2a.duty_u16(duty); m2b.duty_u16(0)    # back-right backward contribution
+    m3a.duty_u16(0);    m3b.duty_u16(duty) # back-left backward contribution
+    m4a.duty_u16(0);    m4b.duty_u16(duty) # front-left backward contribution
+def rotate_clockwise(duty):
+    m1a.duty_u16(duty); m1b.duty_u16(0)
+    m2a.duty_u16(duty); m2b.duty_u16(0)
+    m3a.duty_u16(duty); m3b.duty_u16(0)
+    m4a.duty_u16(duty); m4b.duty_u16(0)
+def rotate_anticlockwise(duty):
+    m1a.duty_u16(0); m1b.duty_u16(duty)
+    m2a.duty_u16(0); m2b.duty_u16(duty)
+    m3a.duty_u16(0); m3b.duty_u16(duty)
+    m4a.duty_u16(0); m4b.duty_u16(duty)
+drive_forward(30000)
+sleep(2)
+drive_backward(30000)
+sleep(2)
+rotate_clockwise(30000)
+sleep(2)
+rotate_anticlockwise(30000)
+sleep(2)
+stop_all()</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Add a <code>drive_right(duty)</code> function. For an X-config robot driving right,
+          M1 (front-right) and M4 (front-left) use the <strong>positive command</strong>
+          (<code>a=duty, b=0</code>), while M2 (back-right) and M3 (back-left) use the
+          <strong>negative command</strong> (<code>a=0, b=duty</code>). Count how many
+          individual <code>.duty_u16()</code> calls that adds &mdash; Module 4 will clean
+          all of this up.
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="3" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-4">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 4 — Cleaning Up with Classes -->
+    <section class="page" id="mod-4">
+      <div class="module-header">
+        <span class="module-number">Module 04</span>
+        <h2>Cleaning Up with Classes</h2>
+        <p class="module-intro">
+          In Module 3 we had eight separate variables just to run four motors. Now we'll
+          replace all of that with a <strong>Python class</strong>. A class is a blueprint:
+          define it once, then create as many motor objects as you need with a single line each.
+        </p>
+      </div>
+
+      <div class="workflow-note-box">
+        <strong>&#128712; How these lessons work</strong>
+        <ul>
+          <li><strong>Lessons 1&ndash;4 and 6&ndash;9</strong> are complete, standalone programs &mdash; each one replaces your whole Pico file.</li>
+          <li><strong>Lesson 5 only</strong> adds a new class on top of Lesson 4. Keep Lesson 4&rsquo;s code open and paste Lesson 5&rsquo;s block below it.</li>
+          <li>Always check the coloured label above each code block &mdash; it tells you exactly what to do.</li>
+        </ul>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Understand what a Python class is and why it's useful</li>
+          <li>Write a <code>Motor</code> class with <code>__init__</code> and <code>run</code> methods</li>
+          <li>Replace eight loose variables with four clean <code>Motor</code> objects</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>How it works</h4>
+        <p>
+          The <code>Motor</code> class stores its own two PWM inputs (IN1 and IN2) inside
+          <code>self</code>. The <code>run(speed)</code> method takes a value from
+          <code>-65535</code> (full negative) to <code>65535</code> (full positive) and
+          handles both inputs automatically. Zero coasts to a stop.
+        </p>
+        <p style="margin-top:12px">
+          Compare <code>Motor(11, 10)</code> to the eight PWM calls it replaced in Module 3.
+          Positive values drive pin_a and silence pin_b; negative values do the opposite.
+          Which way each wheel actually spins depends on how it is physically wired.
+        </p>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-4">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-4">from machine import Pin, PWM
+import time
+
+class Motor:
+    def __init__(self, pin_a, pin_b):
+        self.a = PWM(Pin(pin_a))
+        self.b = PWM(Pin(pin_b))
+        self.a.freq(1000)
+        self.b.freq(1000)
+
+    def run(self, speed):
+        speed = max(-65535, min(65535, int(speed)))
+        if speed &gt; 0:
+            # Positive command: IN1=duty, IN2=0
+            self.a.duty_u16(speed)
+            self.b.duty_u16(0)
+        elif speed &lt; 0:
+            # Negative command: IN1=0, IN2=duty
+            self.a.duty_u16(0)
+            self.b.duty_u16(-speed)
+        else:
+            # Coast to stop: both inputs to 0
+            self.a.duty_u16(0)
+            self.b.duty_u16(0)
+
+M1 = Motor(11, 10)
+M2 = Motor(13, 12)
+M3 = Motor(15, 14)
+M4 = Motor(18, 19)
+
+all_motors = [M1, M2, M3, M4]
+names = ["front-right", "back-right", "back-left", "front-left"]
+
+for motor, name in zip(all_motors, names):
+    print("Testing positive command:", name)
+    motor.run(30000)
+    time.sleep(1)
+    print("Testing negative command:", name)
+    motor.run(-30000)
+    time.sleep(1)
+    motor.run(0)
+    time.sleep(0.5)
+
+print("All motors tested!")</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Add a <code>stop()</code> method to <code>Motor</code> that calls <code>self.run(0)</code>.
+          Then send a positive command to all four motors with <code>M1.run(30000)</code>,
+          <code>M2.run(30000)</code>, and so on. Compare how much shorter that is versus the
+          Module 3 version. If a wheel spins the wrong way, swap its two pin numbers in the
+          <code>Motor(pin_a, pin_b)</code> constructor call.
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="4" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-5">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 5 — The omni-drive brain -->
+    <section class="page" id="mod-5">
+      <div class="module-header">
+        <span class="module-number">Module 05</span>
+        <h2>The omni-drive brain: x, y, and rot</h2>
+        <p class="module-intro">
+          This is the heart of the whole robot. Three numbers control everything:
+          <strong>x</strong> (left/right), <strong>y</strong> (forward/back), and
+          <strong>rot</strong> (spin). Four simple equations mix those three values into
+          four individual wheel speeds.
+        </p>
+        <p class="module-intro" style="margin-top:10px">
+          <strong>Building on Lesson 4:</strong> This code block only contains the
+          <code>OmniRobot</code> class. Keep your Lesson 4 file open and paste it
+          below the <code>M4 = Motor(18, 19)</code> line.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Understand what x, y, and rot mean for an omni robot</li>
+          <li>Learn the four core motor equations</li>
+          <li>Implement <code>drive_xy_rot</code> and test forward, sideways, and spin</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>The four magic equations</h4>
+        <p>These equations split the robot's desired motion into each wheel's share:</p>
+        <div class="equation-grid">
+          <div class="eq"><code>m1&nbsp;=&nbsp;(&minus;y&nbsp;+&nbsp;x)&nbsp;+&nbsp;rot</code><span>front-right</span></div>
+          <div class="eq"><code>m2&nbsp;=&nbsp;(&minus;y&nbsp;&minus;&nbsp;x)&nbsp;+&nbsp;rot</code><span>back-right</span></div>
+          <div class="eq"><code>m3&nbsp;=&nbsp;(y&nbsp;&minus;&nbsp;x)&nbsp;+&nbsp;rot</code><span>back-left</span></div>
+          <div class="eq"><code>m4&nbsp;=&nbsp;(y&nbsp;+&nbsp;x)&nbsp;+&nbsp;rot</code><span>front-left</span></div>
+        </div>
+        <p>
+          When <strong>y</strong> is positive (forward), the right-side motors (M1, M2) receive
+          a negative command and the left-side motors (M3, M4) receive a positive command.
+          Those opposing commands on each side drive the robot straight instead of spinning.
+        </p>
+      </div>
+
+      <div class="omni-layout-callout">
+        <figure class="omni-layout-fig" aria-hidden="true">
+          <svg viewBox="0 0 420 470"><use href="#omni-motor-layout"/></svg>
+        </figure>
+        <div class="omni-layout-callout-text">
+          <strong>Map the equations to your robot:</strong> each formula line matches one physical motor.
+          <span style="color:#22d3ee">m1&nbsp;=&nbsp;(&minus;y+x)+rot</span> drives the cyan front-right wheel;
+          <span style="color:#4ade80">m3&nbsp;=&nbsp;(y&minus;x)+rot</span> drives the green back-left wheel.
+          If the robot moves the wrong way, the most likely cause is a motor wired to the wrong position in this diagram.
+        </div>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-5">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-add">&#10133; Keep your Module 4 code open &mdash; paste this section below the <code style="background:none;color:inherit">M4 = Motor(18, 19)</code> line</div>
+        <pre class="code-block" id="code-5">import time
+class OmniRobot:
+    def __init__(self, m1, m2, m3, m4):
+        self.m1 = m1
+        self.m2 = m2
+        self.m3 = m3
+        self.m4 = m4
+    def drive_xy_rot(self, x, y, rot):
+        s1 = (-y + x) + rot   # front-right
+        s2 = (-y - x) + rot   # back-right
+        s3 = ( y - x) + rot   # back-left
+        s4 = ( y + x) + rot   # front-left
+        self.m1.run(s1)
+        self.m2.run(s2)
+        self.m3.run(s3)
+        self.m4.run(s4)
+robot = OmniRobot(M1, M2, M3, M4)
+# Forward
+robot.drive_xy_rot(0, 30000, 0)
+time.sleep(2)
+# Backward
+robot.drive_xy_rot(0, -30000, 0)
+time.sleep(2)
+# Right
+robot.drive_xy_rot(30000, 0, 0)
+time.sleep(2)
+# Left
+robot.drive_xy_rot(-30000, 0, 0)
+time.sleep(2)
+# Rotate clockwise
+robot.drive_xy_rot(0, 0, 20000)
+time.sleep(2)
+# Stop
+robot.drive_xy_rot(0, 0, 0)</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Try <code>drive_xy_rot(20000, 20000, 0)</code> &mdash; the robot should move diagonally
+          forward-right. What happens when you combine all three: <code>(10000, 10000, 5000)</code>?
+          The robot should move diagonally while also spinning slightly.
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="5" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-6">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 6 — Convert angles into movement -->
+    <section class="page" id="mod-6">
+      <div class="module-header">
+        <span class="module-number">Module 06</span>
+        <h2>Convert angles into movement</h2>
+        <p class="module-intro">
+          The ball sensor gives us an <strong>angle</strong> &mdash; a compass bearing from 0 to 359.
+          We need to turn that into x and y values. That's where <code>sin</code> and <code>cos</code>
+          come in &mdash; the same trig functions from math class.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Understand how sin and cos split an angle into x and y components</li>
+          <li>Convert degrees to radians (Python's math library needs radians)</li>
+          <li>Write a <code>drive_angle</code> function that takes an angle and power level</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>How it works</h4>
+        <p>
+          Think of an angle like the hand of a clock. <code>sin(angle)</code> tells you how far
+          left or right to go, and <code>cos(angle)</code> tells you how far forward or back.
+          Together they give the x and y we pass straight to <code>drive_xy_rot</code>.
+        </p>
+        <div class="formula-row">
+          <code>x&nbsp;=&nbsp;sin(angle_rad)&nbsp;&times;&nbsp;power</code>
+          <code>y&nbsp;=&nbsp;cos(angle_rad)&nbsp;&times;&nbsp;power</code>
+        </div>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-6">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-6">from machine import Pin, PWM
+import math
+import time
+
+class Motor:
+    def __init__(self, pin_a, pin_b):
+        self.a = PWM(Pin(pin_a))
+        self.b = PWM(Pin(pin_b))
+        self.a.freq(1000)
+        self.b.freq(1000)
+
+    def run(self, speed):
+        speed = max(-65535, min(65535, int(speed)))
+        if speed &gt; 0:
+            # Positive command: IN1=duty, IN2=0
+            self.a.duty_u16(speed)
+            self.b.duty_u16(0)
+        elif speed &lt; 0:
+            # Negative command: IN1=0, IN2=duty
+            self.a.duty_u16(0)
+            self.b.duty_u16(-speed)
+        else:
+            # Coast to stop: both inputs to 0
+            self.a.duty_u16(0)
+            self.b.duty_u16(0)
+
+class OmniRobot:
+    def __init__(self, m1, m2, m3, m4):
+        self.m1 = m1
+        self.m2 = m2
+        self.m3 = m3
+        self.m4 = m4
+
+    def drive_xy_rot(self, x, y, rot):
+        s1 = (-y + x) + rot   # front-right
+        s2 = (-y - x) + rot   # back-right
+        s3 = ( y - x) + rot   # back-left
+        s4 = ( y + x) + rot   # front-left
+        self.m1.run(s1)
+        self.m2.run(s2)
+        self.m3.run(s3)
+        self.m4.run(s4)
+
+def drive_angle(robot, angle_deg, power, rot=0):
+    angle_rad = math.radians(angle_deg)
+    x = math.sin(angle_rad) * power
+    y = math.cos(angle_rad) * power
+    robot.drive_xy_rot(x, y, rot)
+
+M1 = Motor(11, 10)
+M2 = Motor(13, 12)
+M3 = Motor(15, 14)
+M4 = Motor(18, 19)
+
+robot = OmniRobot(M1, M2, M3, M4)
+
+# 0 degrees = forward
+drive_angle(robot, 0, 30000)
+time.sleep(1)
+# 90 degrees = right
+drive_angle(robot, 90, 30000)
+time.sleep(1)
+# 180 degrees = backward
+drive_angle(robot, 180, 30000)
+time.sleep(1)
+# 270 degrees = left
+drive_angle(robot, 270, 30000)
+time.sleep(1)
+robot.drive_xy_rot(0, 0, 0)</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Try <code>drive_angle(robot, 45, 30000)</code> &mdash; the robot should move diagonally.
+          Now try 135, 225, and 315. Can you trace a square path by calling each of the four
+          cardinal directions in sequence with a pause between them?
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="6" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-7">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 7 — Read the ball sensor ring -->
+    <section class="page" id="mod-7">
+      <div class="module-header">
+        <span class="module-number">Module 07</span>
+        <h2>Read the ball sensor ring</h2>
+        <p class="module-intro">
+          The <strong>ball sensor ring</strong> is an array of infrared sensors in a circle.
+          It detects the IR-emitting ball and tells us which direction it's at &mdash; sending
+          a heading in degrees over UART. We need to read and parse that data.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Understand what a UART serial connection is</li>
+          <li>Read bytes from the sensor ring and decode them into a number</li>
+          <li>Handle the three possible states: no data, ball too close, and heading degrees</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>How it works</h4>
+        <p>
+          The ball ring sends plain text over UART. On this robot it connects via UART1:
+          TX on GP8, RX on GP9 (Nextion connector). We read a line, strip whitespace, and parse
+          the integer. The sensor returns three kinds of values:
+        </p>
+        <ul>
+          <li><strong>None</strong> &mdash; no data received yet (buffer is empty)</li>
+          <li><strong>-1</strong> &mdash; ball is directly under the robot (too close)</li>
+          <li><strong>0&ndash;359</strong> &mdash; the angle to the ball in degrees</li>
+        </ul>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-7">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-7">from machine import UART, Pin
+import time
+ball_uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+def read_ball_heading():
+    if ball_uart.any():
+        try:
+            raw = ball_uart.readline()
+            if raw is None:
+                return None
+            decoded = raw.decode("utf-8").strip()
+            if decoded == "":
+                return None
+            return int(decoded)
+        except Exception:
+            return None
+    return None
+while True:
+    heading = read_ball_heading()
+    if heading is None:
+        print("No ball data")
+    elif heading == -1:
+        print("Ball too close")
+    else:
+        print("Ball at:", heading, "degrees")
+    time.sleep(0.1)</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Move the ball around the sensor ring and watch the heading values print. Can you figure
+          out which angle means the ball is directly in front? Try printing a direction word
+          ("forward", "right", "back", "left") depending on which quarter of the circle the
+          ball is in.
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="7" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-8">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 8 — Add the IMU and hold direction -->
+    <section class="page" id="mod-8">
+      <div class="module-header">
+        <span class="module-number">Module 08</span>
+        <h2>Add the IMU and hold direction</h2>
+        <p class="module-intro">
+          The <strong>IMU</strong> (Inertial Measurement Unit) tells the robot which way it's
+          facing. In soccer, other robots will spin yours around. Without heading correction
+          the robot will chase the ball in the wrong direction. The IMU fixes that.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Understand what an IMU is and what "heading" means</li>
+          <li>Calculate the shortest angular error between current and target heading</li>
+          <li>Turn that error into a <code>rot</code> correction value for <code>drive_xy_rot</code></li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>How it works</h4>
+        <p>
+          The <code>angle_error</code> function finds the shortest rotation needed to reach the
+          target. Without it, you might rotate the long way (e.g., +270&deg; instead of &minus;90&deg;).
+          The <code>heading_hold_rot</code> function scales that error into a <code>rot</code>
+          value. Positive error &rarr; rotate right; negative &rarr; rotate left.
+          The BNO055 IMU connects via I2C0: SDA on GP0, SCL on GP1.
+        </p>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-8">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-8">import time
+def angle_error(current, target):
+    error = target - current
+    while error &gt; 180:
+        error -= 360
+    while error &lt; -180:
+        error += 360
+    return error
+def heading_hold_rot(current_heading, target_heading, gain=200):
+    error = angle_error(current_heading, target_heading)
+    rot = error * gain
+    rot = max(-30000, min(30000, rot))
+    return rot
+def get_imu_heading():
+    # BNO055 on I2C(0): SDA=GP0, SCL=GP1
+    # Replace this stub with real IMU code
+    return 0
+target_heading = 0
+while True:
+    current = get_imu_heading()
+    rot = heading_hold_rot(current, target_heading)
+    print("Heading:", current, "Rot correction:", rot)
+    time.sleep(0.1)</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Test <code>angle_error(350, 10)</code> in the REPL &mdash; it should return
+          <code>20</code>, not <code>-340</code>. Also test <code>angle_error(10, 350)</code>
+          &mdash; it should return <code>-20</code>. Replace <code>get_imu_heading()</code>
+          with your real IMU library when you're ready.
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="8" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+        <button class="next-btn" data-goto="mod-9">Next module &rarr;</button>
+      </div>
+    </section>
+
+    <!-- MODULE 9 — Build the full robot program -->
+    <section class="page" id="mod-9">
+      <div class="module-header">
+        <span class="module-number">Module 09</span>
+        <h2>Build the full robot program</h2>
+        <p class="module-intro">
+          This is it &mdash; all nine modules combined into one loop. Every 100&nbsp;ms the robot
+          reads the ball sensor, calculates heading correction, and drives toward the ball while
+          staying oriented forward. This is your playable robot.
+        </p>
+      </div>
+
+      <div class="goals-box">
+        <h4>&#127919; Learning goals</h4>
+        <ul>
+          <li>Combine Motor, OmniRobot, drive_angle, and UART into one complete program</li>
+          <li>Handle all three ball states cleanly inside the main loop</li>
+          <li>Use IMU heading correction on every single frame</li>
+        </ul>
+      </div>
+
+      <div class="explain-box">
+        <h4>How it works</h4>
+        <p>The loop runs 10 times per second. Each tick:</p>
+        <ol>
+          <li>Read the ball sensor &rarr; get the angle to the ball</li>
+          <li>Read the IMU &rarr; get the current facing angle</li>
+          <li>Calculate rotation correction with <code>heading_hold_rot</code></li>
+          <li>If ball found: drive toward it with <code>drive_angle</code> + rot correction</li>
+          <li>If no ball: hold position and keep correcting heading only</li>
+        </ol>
+      </div>
+
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython</span>
+          <button class="copy-btn" data-copy-target="code-9">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole file with this code</div>
+        <pre class="code-block" id="code-9">from machine import Pin, PWM, UART
+import math
+import time
+
+class Motor:
+    def __init__(self, pin_a, pin_b):
+        self.a = PWM(Pin(pin_a))
+        self.b = PWM(Pin(pin_b))
+        self.a.freq(1000)
+        self.b.freq(1000)
+
+    def run(self, speed):
+        speed = max(-65535, min(65535, int(speed)))
+        if speed &gt; 0:
+            # Positive command
+            self.a.duty_u16(speed)
+            self.b.duty_u16(0)
+        elif speed &lt; 0:
+            # Negative command
+            self.a.duty_u16(0)
+            self.b.duty_u16(-speed)
+        else:
+            self.a.duty_u16(0)
+            self.b.duty_u16(0)
+
+class OmniRobot:
+    def __init__(self, m1, m2, m3, m4):
+        self.m1 = m1
+        self.m2 = m2
+        self.m3 = m3
+        self.m4 = m4
+
+    def drive_xy_rot(self, x, y, rot):
+        s1 = (-y + x) + rot   # front-right
+        s2 = (-y - x) + rot   # back-right
+        s3 = ( y - x) + rot   # back-left
+        s4 = ( y + x) + rot   # front-left
+        self.m1.run(s1)
+        self.m2.run(s2)
+        self.m3.run(s3)
+        self.m4.run(s4)
+
+def drive_angle(robot, angle_deg, power, rot=0):
+    angle_rad = math.radians(angle_deg)
+    x = math.sin(angle_rad) * power
+    y = math.cos(angle_rad) * power
+    robot.drive_xy_rot(x, y, rot)
+
+def angle_error(current, target):
+    error = target - current
+    while error &gt; 180:
+        error -= 360
+    while error &lt; -180:
+        error += 360
+    return error
+
+def heading_hold_rot(current_heading, target_heading, gain=200):
+    error = angle_error(current_heading, target_heading)
+    rot = error * gain
+    rot = max(-30000, min(30000, rot))
+    return rot
+
+ball_uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+
+def read_ball():
+    if ball_uart.any():
+        try:
+            raw = ball_uart.readline()
+            if raw is None:
+                return None
+            decoded = raw.decode("utf-8").strip()
+            if decoded == "":
+                return None
+            return int(decoded)
+        except Exception:
+            return None
+    return None
+
+def get_imu_heading():
+    # BNO055 on I2C(0): SDA=GP0, SCL=GP1
+    # Replace this stub with real IMU code
+    return 0
+
+M1 = Motor(11, 10)
+M2 = Motor(13, 12)
+M3 = Motor(15, 14)
+M4 = Motor(18, 19)
+
+robot = OmniRobot(M1, M2, M3, M4)
+
+TARGET_HEADING = 0
+DRIVE_POWER = 30000
+
+while True:
+    ball = read_ball()
+    imu = get_imu_heading()
+    rot = heading_hold_rot(imu, TARGET_HEADING)
+    if ball is None:
+        robot.drive_xy_rot(0, 0, rot)
+    elif ball == -1:
+        robot.drive_xy_rot(0, 0, rot)
+    else:
+        drive_angle(robot, ball, DRIVE_POWER, rot)
+    time.sleep(0.1)</pre>
+      </div>
+
+      <div class="challenge-box">
+        <h4>&#128170; Mini challenge</h4>
+        <p>
+          Replace <code>get_imu_heading()</code> with your real IMU library. Adjust
+          <code>DRIVE_POWER</code> &mdash; higher values are faster but harder to control near
+          the ball. Try changing the <code>gain</code> in <code>heading_hold_rot</code>: too low
+          and the robot drifts; too high and it wobbles. Find the sweet spot!
+        </p>
+      </div>
+
+      <div class="completion-row">
+        <label class="checkbox-label">
+          <input type="checkbox" class="module-check" data-module="9" />
+          <span class="checkmark"></span>
+          Mark module as complete
+        </label>
+      </div>
+
+      <div class="finish-banner" id="finish-banner">
+        <div class="finish-icon">&#127941;</div>
+        <h3>You built a robot!</h3>
+        <p>
+          You now understand every layer: from a single PWM pin all the way up to a full
+          soccer-playing loop. The robot sees the ball, knows where it's facing, and drives
+          itself. That's real robotics engineering.
+        </p>
+      </div>
+    </section>
+
+    <!-- WIRING REFERENCE -->
+    <section class="page" id="wiring">
+      <div class="module-header">
+        <span class="module-number" style="background:rgba(93,102,128,0.15);color:#94a3b8;border-color:rgba(93,102,128,0.25)">Reference</span>
+        <h2>Wiring Reference</h2>
+        <p class="module-intro">
+          Pin maps, motor positions, power rules, and DRV8871 notes.
+          Every pin assignment shown here matches the code in all nine lessons.
+        </p>
+      </div>
+
+      <!-- ── 1. MOTOR SIGNAL WIRING ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Motor signal wiring</div>
+        <div class="wiring-diagram">
+          <div class="wiring-diagram-title">RASPBERRY PI PICO &rarr; 4&times; DRV8871 &rarr; 4 DC MOTORS</div>
+          <svg class="wiring-svg" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg" aria-label="Full robot motor wiring diagram">
+
+            <!-- PICO box -->
+            <rect x="12" y="12" width="120" height="456" rx="9" fill="#1a1e29" stroke="#343a52" stroke-width="1.5"/>
+            <text x="72" y="31" text-anchor="middle" class="wd-board-label">RASPBERRY PI</text>
+            <text x="72" y="43" text-anchor="middle" class="wd-board-label">PICO / PICO W</text>
+            <line x1="20" y1="52" x2="124" y2="52" stroke="#2a2f42" stroke-width="1"/>
+            <text x="72" y="62" text-anchor="middle" class="wsvg-note">motor signal pins</text>
+
+            <!-- GP11 (M1 IN1) -->
+            <circle cx="132" cy="72" r="3.5" fill="#5b8fff"/>
+            <text x="128" y="76" text-anchor="end" class="wsvg-in1">GP11</text>
+            <!-- GP10 (M1 IN2) -->
+            <circle cx="132" cy="88" r="3.5" fill="#3ecf8e"/>
+            <text x="128" y="92" text-anchor="end" class="wsvg-in2">GP10</text>
+
+            <!-- GP13 (M2 IN1) -->
+            <circle cx="132" cy="179" r="3.5" fill="#5b8fff"/>
+            <text x="128" y="183" text-anchor="end" class="wsvg-in1">GP13</text>
+            <!-- GP12 (M2 IN2) -->
+            <circle cx="132" cy="195" r="3.5" fill="#3ecf8e"/>
+            <text x="128" y="199" text-anchor="end" class="wsvg-in2">GP12</text>
+
+            <!-- GP15 (M3 IN1) -->
+            <circle cx="132" cy="292" r="3.5" fill="#5b8fff"/>
+            <text x="128" y="296" text-anchor="end" class="wsvg-in1">GP15</text>
+            <!-- GP14 (M3 IN2) -->
+            <circle cx="132" cy="308" r="3.5" fill="#3ecf8e"/>
+            <text x="128" y="312" text-anchor="end" class="wsvg-in2">GP14</text>
+
+            <!-- GP18 (M4 IN1) -->
+            <circle cx="132" cy="405" r="3.5" fill="#5b8fff"/>
+            <text x="128" y="409" text-anchor="end" class="wsvg-in1">GP18</text>
+            <!-- GP19 (M4 IN2) -->
+            <circle cx="132" cy="421" r="3.5" fill="#3ecf8e"/>
+            <text x="128" y="425" text-anchor="end" class="wsvg-in2">GP19</text>
+
+            <!-- Pico sensor note (bottom of box) -->
+            <line x1="20" y1="440" x2="124" y2="440" stroke="#2a2f42" stroke-width="1"/>
+            <text x="72" y="452" text-anchor="middle" class="wsvg-note">GP0/1 I&#178;C &middot; GP8/9 UART</text>
+            <text x="72" y="463" text-anchor="middle" class="wsvg-note">&#8594; see sensor diagram</text>
+
+            <!-- SIGNAL WIRES: Pico &#8594; Drivers -->
+            <line x1="132" y1="72"  x2="210" y2="66"  stroke="#5b8fff" stroke-width="1.8"/>
+            <line x1="132" y1="88"  x2="210" y2="82"  stroke="#3ecf8e" stroke-width="1.8"/>
+            <line x1="132" y1="179" x2="210" y2="179" stroke="#5b8fff" stroke-width="1.8"/>
+            <line x1="132" y1="195" x2="210" y2="195" stroke="#3ecf8e" stroke-width="1.8"/>
+            <line x1="132" y1="292" x2="210" y2="292" stroke="#5b8fff" stroke-width="1.8"/>
+            <line x1="132" y1="308" x2="210" y2="308" stroke="#3ecf8e" stroke-width="1.8"/>
+            <line x1="132" y1="405" x2="210" y2="405" stroke="#5b8fff" stroke-width="1.8"/>
+            <line x1="132" y1="421" x2="210" y2="421" stroke="#3ecf8e" stroke-width="1.8"/>
+
+            <!-- DRV1 (M1 front-right) y=22 h=93 -->
+            <rect x="210" y="22" width="126" height="93" rx="8" fill="#222737" stroke="#343a52" stroke-width="1.5"/>
+            <text x="273" y="37" text-anchor="middle" class="wsvg-drv-label">DRV8871</text>
+            <text x="273" y="50" text-anchor="middle" class="wsvg-lbl">M1 &middot; FRONT-RIGHT</text>
+            <circle cx="210" cy="66" r="3.5" fill="#5b8fff"/><text x="215" y="70" class="wsvg-in1">IN1</text>
+            <circle cx="210" cy="82" r="3.5" fill="#3ecf8e"/><text x="215" y="86" class="wsvg-in2">IN2</text>
+            <circle cx="336" cy="66" r="3.5" fill="#e2b964"/><text x="331" y="70" text-anchor="end" class="wsvg-out">OUT1</text>
+            <circle cx="336" cy="82" r="3.5" fill="#e2b964"/><text x="331" y="86" text-anchor="end" class="wsvg-out">OUT2</text>
+            <circle cx="225" cy="103" r="3" fill="#636e82"/><text x="230" y="107" class="wsvg-gnd">GND</text>
+            <circle cx="307" cy="103" r="3" fill="#ff7b47"/><text x="302" y="107" text-anchor="end" class="wsvg-vm">VM+</text>
+
+            <!-- DRV2 (M2 back-right) y=135 h=93 -->
+            <rect x="210" y="135" width="126" height="93" rx="8" fill="#222737" stroke="#343a52" stroke-width="1.5"/>
+            <text x="273" y="150" text-anchor="middle" class="wsvg-drv-label">DRV8871</text>
+            <text x="273" y="163" text-anchor="middle" class="wsvg-lbl">M2 &middot; BACK-RIGHT</text>
+            <circle cx="210" cy="179" r="3.5" fill="#5b8fff"/><text x="215" y="183" class="wsvg-in1">IN1</text>
+            <circle cx="210" cy="195" r="3.5" fill="#3ecf8e"/><text x="215" y="199" class="wsvg-in2">IN2</text>
+            <circle cx="336" cy="179" r="3.5" fill="#e2b964"/><text x="331" y="183" text-anchor="end" class="wsvg-out">OUT1</text>
+            <circle cx="336" cy="195" r="3.5" fill="#e2b964"/><text x="331" y="199" text-anchor="end" class="wsvg-out">OUT2</text>
+            <circle cx="225" cy="216" r="3" fill="#636e82"/><text x="230" y="220" class="wsvg-gnd">GND</text>
+            <circle cx="307" cy="216" r="3" fill="#ff7b47"/><text x="302" y="220" text-anchor="end" class="wsvg-vm">VM+</text>
+
+            <!-- DRV3 (M3 back-left) y=248 h=93 -->
+            <rect x="210" y="248" width="126" height="93" rx="8" fill="#222737" stroke="#343a52" stroke-width="1.5"/>
+            <text x="273" y="263" text-anchor="middle" class="wsvg-drv-label">DRV8871</text>
+            <text x="273" y="276" text-anchor="middle" class="wsvg-lbl">M3 &middot; BACK-LEFT</text>
+            <circle cx="210" cy="292" r="3.5" fill="#5b8fff"/><text x="215" y="296" class="wsvg-in1">IN1</text>
+            <circle cx="210" cy="308" r="3.5" fill="#3ecf8e"/><text x="215" y="312" class="wsvg-in2">IN2</text>
+            <circle cx="336" cy="292" r="3.5" fill="#e2b964"/><text x="331" y="296" text-anchor="end" class="wsvg-out">OUT1</text>
+            <circle cx="336" cy="308" r="3.5" fill="#e2b964"/><text x="331" y="312" text-anchor="end" class="wsvg-out">OUT2</text>
+            <circle cx="225" cy="329" r="3" fill="#636e82"/><text x="230" y="333" class="wsvg-gnd">GND</text>
+            <circle cx="307" cy="329" r="3" fill="#ff7b47"/><text x="302" y="333" text-anchor="end" class="wsvg-vm">VM+</text>
+
+            <!-- DRV4 (M4 front-left) y=361 h=93 -->
+            <rect x="210" y="361" width="126" height="93" rx="8" fill="#222737" stroke="#343a52" stroke-width="1.5"/>
+            <text x="273" y="376" text-anchor="middle" class="wsvg-drv-label">DRV8871</text>
+            <text x="273" y="389" text-anchor="middle" class="wsvg-lbl">M4 &middot; FRONT-LEFT</text>
+            <circle cx="210" cy="405" r="3.5" fill="#5b8fff"/><text x="215" y="409" class="wsvg-in1">IN1</text>
+            <circle cx="210" cy="421" r="3.5" fill="#3ecf8e"/><text x="215" y="425" class="wsvg-in2">IN2</text>
+            <circle cx="336" cy="405" r="3.5" fill="#e2b964"/><text x="331" y="409" text-anchor="end" class="wsvg-out">OUT1</text>
+            <circle cx="336" cy="421" r="3.5" fill="#e2b964"/><text x="331" y="425" text-anchor="end" class="wsvg-out">OUT2</text>
+            <circle cx="225" cy="442" r="3" fill="#636e82"/><text x="230" y="446" class="wsvg-gnd">GND</text>
+            <circle cx="307" cy="442" r="3" fill="#ff7b47"/><text x="302" y="446" text-anchor="end" class="wsvg-vm">VM+</text>
+
+            <!-- OUT WIRES: Drivers &#8594; Motors -->
+            <line x1="336" y1="66"  x2="524" y2="66"  stroke="#e2b964" stroke-width="1.8"/>
+            <line x1="336" y1="82"  x2="524" y2="74"  stroke="#e2b964" stroke-width="1.8"/>
+            <line x1="336" y1="179" x2="524" y2="179" stroke="#e2b964" stroke-width="1.8"/>
+            <line x1="336" y1="195" x2="524" y2="187" stroke="#e2b964" stroke-width="1.8"/>
+            <line x1="336" y1="292" x2="524" y2="292" stroke="#e2b964" stroke-width="1.8"/>
+            <line x1="336" y1="308" x2="524" y2="300" stroke="#e2b964" stroke-width="1.8"/>
+            <line x1="336" y1="405" x2="524" y2="405" stroke="#e2b964" stroke-width="1.8"/>
+            <line x1="336" y1="421" x2="524" y2="413" stroke="#e2b964" stroke-width="1.8"/>
+
+            <!-- MOTOR CIRCLES (cx=560 r=36) -->
+            <circle cx="560" cy="68"  r="36" fill="#13161e" stroke="#e2b964" stroke-width="2"/>
+            <text x="560" y="63"  text-anchor="middle" class="wsvg-mnum">M1</text>
+            <text x="560" y="78"  text-anchor="middle" class="wsvg-motor-loc">FRONT-RIGHT</text>
+
+            <circle cx="560" cy="181" r="36" fill="#13161e" stroke="#e2b964" stroke-width="2"/>
+            <text x="560" y="176" text-anchor="middle" class="wsvg-mnum">M2</text>
+            <text x="560" y="191" text-anchor="middle" class="wsvg-motor-loc">BACK-RIGHT</text>
+
+            <circle cx="560" cy="294" r="36" fill="#13161e" stroke="#e2b964" stroke-width="2"/>
+            <text x="560" y="289" text-anchor="middle" class="wsvg-mnum">M3</text>
+            <text x="560" y="304" text-anchor="middle" class="wsvg-motor-loc">BACK-LEFT</text>
+
+            <circle cx="560" cy="407" r="36" fill="#13161e" stroke="#e2b964" stroke-width="2"/>
+            <text x="560" y="402" text-anchor="middle" class="wsvg-mnum">M4</text>
+            <text x="560" y="417" text-anchor="middle" class="wsvg-motor-loc">FRONT-LEFT</text>
+
+            <!-- Shared GND rail -->
+            <line x1="30" y1="470" x2="340" y2="470" stroke="#636e82" stroke-width="2"/>
+            <text x="50" y="479" class="wsvg-gnd">&#9178; shared GND rail (all GND pins connect here)</text>
+          </svg>
+          <div class="wiring-legend">
+            <div class="wl-item"><div class="wl-dot" style="background:#5b8fff"></div>IN1 &mdash; PWM signal (positive command uses this pin)</div>
+            <div class="wl-item"><div class="wl-dot" style="background:#3ecf8e"></div>IN2 &mdash; PWM signal (negative command uses this pin)</div>
+            <div class="wl-item"><div class="wl-dot" style="background:#e2b964"></div>OUT1 / OUT2 &rarr; motor terminals</div>
+            <div class="wl-item"><div class="wl-dot" style="background:#ff7b47"></div>VM+ &mdash; separate motor battery supply (not Pico VSYS)</div>
+            <div class="wl-item"><div class="wl-dot" style="background:#636e82"></div>GND &mdash; all grounds connect to shared rail</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 2. SENSOR & COMMS ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Sensor &amp; communication wiring</div>
+        <div class="wiring-diagram">
+          <div class="wiring-diagram-title">I&#178;C (BNO055 IMU) &amp; UART1 (Ball Sensor / Nextion)</div>
+          <svg class="wiring-svg" viewBox="0 0 560 210" xmlns="http://www.w3.org/2000/svg" aria-label="Sensor and communication wiring diagram">
+
+            <!-- PICO box -->
+            <rect x="12" y="12" width="110" height="186" rx="9" fill="#1a1e29" stroke="#343a52" stroke-width="1.5"/>
+            <text x="67" y="30" text-anchor="middle" class="wd-board-label">RASPBERRY PI</text>
+            <text x="67" y="42" text-anchor="middle" class="wd-board-label">PICO / PICO W</text>
+            <line x1="20" y1="50" x2="114" y2="50" stroke="#2a2f42" stroke-width="1"/>
+
+            <!-- I2C pins -->
+            <circle cx="122" cy="63" r="3.5" fill="#22d3ee"/>
+            <text x="118" y="67" text-anchor="end" class="wsvg-i2c">GP0 / SDA</text>
+            <circle cx="122" cy="79" r="3.5" fill="#22d3ee"/>
+            <text x="118" y="83" text-anchor="end" class="wsvg-i2c">GP1 / SCL</text>
+            <circle cx="122" cy="95" r="3.5" fill="#fb923c"/>
+            <text x="118" y="99" text-anchor="end" class="wsvg-3v3">3V3</text>
+            <circle cx="122" cy="111" r="3.5" fill="#636e82"/>
+            <text x="118" y="115" text-anchor="end" class="wsvg-gnd">GND</text>
+
+            <line x1="20" y1="126" x2="114" y2="126" stroke="#2a2f42" stroke-width="1"/>
+
+            <!-- UART pins -->
+            <circle cx="122" cy="140" r="3.5" fill="#c084fc"/>
+            <text x="118" y="144" text-anchor="end" class="wsvg-uart">GP8 / TX</text>
+            <circle cx="122" cy="156" r="3.5" fill="#c084fc"/>
+            <text x="118" y="160" text-anchor="end" class="wsvg-uart">GP9 / RX</text>
+            <circle cx="122" cy="172" r="3.5" fill="#636e82"/>
+            <text x="118" y="176" text-anchor="end" class="wsvg-gnd">GND</text>
+
+            <!-- WIRES: I2C -->
+            <line x1="122" y1="63"  x2="215" y2="57"  stroke="#22d3ee" stroke-width="1.8"/>
+            <line x1="122" y1="79"  x2="215" y2="71"  stroke="#22d3ee" stroke-width="1.8"/>
+            <line x1="122" y1="95"  x2="215" y2="85"  stroke="#fb923c" stroke-width="1.8"/>
+            <line x1="122" y1="111" x2="215" y2="99"  stroke="#636e82" stroke-width="1.8"/>
+
+            <!-- BNO055 IMU box -->
+            <rect x="215" y="22" width="130" height="90" rx="8" fill="#222737" stroke="#343a52" stroke-width="1.5"/>
+            <text x="280" y="38" text-anchor="middle" class="wsvg-drv-label">BNO055 IMU</text>
+            <text x="280" y="50" text-anchor="middle" class="wsvg-lbl">I&#178;C0 addr 0x28</text>
+            <circle cx="215" cy="57" r="3.5" fill="#22d3ee"/><text x="220" y="61" class="wsvg-i2c">SDA</text>
+            <circle cx="215" cy="71" r="3.5" fill="#22d3ee"/><text x="220" y="75" class="wsvg-i2c">SCL</text>
+            <circle cx="215" cy="85" r="3.5" fill="#fb923c"/><text x="220" y="89" class="wsvg-3v3">3V3</text>
+            <circle cx="215" cy="99" r="3.5" fill="#636e82"/><text x="220" y="103" class="wsvg-gnd">GND</text>
+            <text x="350" y="40" class="wsvg-note">Pico 3.3 V supply only</text>
+            <text x="350" y="50" class="wsvg-note">do NOT use 5 V</text>
+
+            <!-- WIRES: UART -->
+            <line x1="122" y1="140" x2="215" y2="148" stroke="#c084fc" stroke-width="1.8"/>
+            <line x1="122" y1="156" x2="215" y2="164" stroke="#c084fc" stroke-width="1.8"/>
+            <line x1="122" y1="172" x2="215" y2="178" stroke="#636e82" stroke-width="1.8"/>
+
+            <!-- Ball sensor / Nextion box -->
+            <rect x="215" y="130" width="130" height="70" rx="8" fill="#222737" stroke="#343a52" stroke-width="1.5"/>
+            <text x="280" y="145" text-anchor="middle" class="wsvg-drv-label">Ball Ring / Nextion</text>
+            <text x="280" y="157" text-anchor="middle" class="wsvg-lbl">UART1 &middot; 9600 baud</text>
+            <circle cx="215" cy="148" r="3.5" fill="#c084fc"/><text x="220" y="152" class="wsvg-uart">RX &larr; Pico TX</text>
+            <circle cx="215" cy="164" r="3.5" fill="#c084fc"/><text x="220" y="168" class="wsvg-uart">TX &rarr; Pico RX</text>
+            <circle cx="215" cy="178" r="3.5" fill="#636e82"/><text x="220" y="182" class="wsvg-gnd">GND</text>
+            <text x="350" y="148" class="wsvg-note">Check device spec</text>
+            <text x="350" y="158" class="wsvg-note">for 3.3 V or 5 V power</text>
+          </svg>
+          <div class="wiring-legend">
+            <div class="wl-item"><div class="wl-dot" style="background:#22d3ee"></div>I&#178;C &mdash; SDA &amp; SCL on I2C0 bus</div>
+            <div class="wl-item"><div class="wl-dot" style="background:#c084fc"></div>UART &mdash; TX/RX crossed (Pico TX &rarr; device RX)</div>
+            <div class="wl-item"><div class="wl-dot" style="background:#fb923c"></div>3V3 &mdash; Pico 3.3 V logic supply</div>
+            <div class="wl-item"><div class="wl-dot" style="background:#636e82"></div>GND &mdash; shared ground rail</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 3. MOTOR ARRANGEMENT ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Motor arrangement (top-down view)</div>
+        <div class="wiring-diagram">
+          <div class="wiring-diagram-title">X-CONFIGURATION &mdash; DIAGONAL OMNI WHEEL LAYOUT</div>
+          <svg class="wiring-svg" viewBox="0 0 480 400" xmlns="http://www.w3.org/2000/svg" aria-label="Top-down motor arrangement diagram">
+
+            <!-- FRONT indicator -->
+            <text x="240" y="42" text-anchor="middle" class="wsvg-front">&#9650; FRONT</text>
+            <polygon points="240,52 229,70 251,70" fill="#5b8fff" opacity="0.9"/>
+
+            <!-- Robot body -->
+            <rect x="175" y="115" width="130" height="170" rx="12" fill="#1a1e29" stroke="#5b8fff" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <text x="240" y="197" text-anchor="middle" style="font-size:9px;fill:#5d6680">X-CONFIG</text>
+            <text x="240" y="210" text-anchor="middle" style="font-size:9px;fill:#5d6680">OMNI ROBOT</text>
+
+            <!-- M4 (front-left) cx=147 cy=87 -->
+            <circle cx="147" cy="87" r="32" fill="#13161e" stroke="#e2b964" stroke-width="2.5"/>
+            <!-- "/" diagonal orientation (NW-SE) -->
+            <line x1="161" y1="73" x2="133" y2="101" stroke="#e2b964" stroke-width="3" stroke-linecap="round"/>
+            <text x="147" y="83" text-anchor="middle" class="wsvg-mnum">M4</text>
+            <text x="147" y="97" text-anchor="middle" class="wsvg-motor-loc">FRONT-LEFT</text>
+            <text x="107" y="82" text-anchor="end" class="wsvg-pin-ext">GP18/GP19</text>
+            <text x="107" y="94" text-anchor="end" style="font-size:8px;fill:#9aa3bc">front-left</text>
+
+            <!-- M1 (front-right) cx=333 cy=87 -->
+            <circle cx="333" cy="87" r="32" fill="#13161e" stroke="#e2b964" stroke-width="2.5"/>
+            <!-- "\" diagonal orientation (NE-SW) -->
+            <line x1="319" y1="73" x2="347" y2="101" stroke="#e2b964" stroke-width="3" stroke-linecap="round"/>
+            <text x="333" y="83" text-anchor="middle" class="wsvg-mnum">M1</text>
+            <text x="333" y="97" text-anchor="middle" class="wsvg-motor-loc">FRONT-RIGHT</text>
+            <text x="373" y="82" class="wsvg-pin-ext">GP11/GP10</text>
+            <text x="373" y="94" style="font-size:8px;fill:#9aa3bc">front-right</text>
+
+            <!-- M3 (back-left) cx=147 cy=313 -->
+            <circle cx="147" cy="313" r="32" fill="#13161e" stroke="#e2b964" stroke-width="2.5"/>
+            <!-- "\" diagonal orientation (NE-SW) — same as M1 -->
+            <line x1="133" y1="299" x2="161" y2="327" stroke="#e2b964" stroke-width="3" stroke-linecap="round"/>
+            <text x="147" y="309" text-anchor="middle" class="wsvg-mnum">M3</text>
+            <text x="147" y="323" text-anchor="middle" class="wsvg-motor-loc">BACK-LEFT</text>
+            <text x="107" y="308" text-anchor="end" class="wsvg-pin-ext">GP15/GP14</text>
+            <text x="107" y="320" text-anchor="end" style="font-size:8px;fill:#9aa3bc">back-left</text>
+
+            <!-- M2 (back-right) cx=333 cy=313 -->
+            <circle cx="333" cy="313" r="32" fill="#13161e" stroke="#e2b964" stroke-width="2.5"/>
+            <!-- "/" diagonal orientation (NW-SE) — same as M4 -->
+            <line x1="347" y1="299" x2="319" y2="327" stroke="#e2b964" stroke-width="3" stroke-linecap="round"/>
+            <text x="333" y="309" text-anchor="middle" class="wsvg-mnum">M2</text>
+            <text x="333" y="323" text-anchor="middle" class="wsvg-motor-loc">BACK-RIGHT</text>
+            <text x="373" y="308" class="wsvg-pin-ext">GP13/GP12</text>
+            <text x="373" y="320" style="font-size:8px;fill:#9aa3bc">back-right</text>
+
+            <!-- REAR indicator -->
+            <text x="240" y="372" text-anchor="middle" style="font-size:10px;fill:#5d6680">&#9660; REAR</text>
+
+            <!-- Code line -->
+            <text x="240" y="392" text-anchor="middle" style="font-size:7.5px;fill:#5b8fff;font-family:'JetBrains Mono',monospace">Motor(11,10) &middot; Motor(13,12) &middot; Motor(15,14) &middot; Motor(18,19)</text>
+          </svg>
+        </div>
+        <p style="font-size:13px;color:var(--text-3);margin-top:10px;line-height:1.65">
+          Each wheel is mounted at 45&deg; to the chassis. The bold diagonal line inside each circle shows
+          the wheel&rsquo;s axis direction. M1 and M3 share one diagonal (&quot;\&quot;); M2 and M4 share
+          the perpendicular diagonal (&quot;/&quot;) &mdash; together they give the robot sideways sliding
+          and independent rotation. The motor numbers match every code example in all nine lessons.
+        </p>
+      </div>
+
+      <!-- ── 4. MOTOR PIN TABLE ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Motor driver pin mapping</div>
+        <table class="pin-table">
+          <thead>
+            <tr>
+              <th>Motor</th><th>Position</th><th>IN1 (Pico pin)</th><th>IN2 (Pico pin)</th><th>Driver</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>M1</strong></td>
+              <td class="t-loc">Front-right</td>
+              <td><span class="t-in1">GP11</span></td>
+              <td><span class="t-in2">GP10</span></td>
+              <td>DRV8871</td>
+            </tr>
+            <tr>
+              <td><strong>M2</strong></td>
+              <td class="t-loc">Back-right</td>
+              <td><span class="t-in1">GP13</span></td>
+              <td><span class="t-in2">GP12</span></td>
+              <td>DRV8871</td>
+            </tr>
+            <tr>
+              <td><strong>M3</strong></td>
+              <td class="t-loc">Back-left</td>
+              <td><span class="t-in1">GP15</span></td>
+              <td><span class="t-in2">GP14</span></td>
+              <td>DRV8871</td>
+            </tr>
+            <tr>
+              <td><strong>M4</strong></td>
+              <td class="t-loc">Front-left</td>
+              <td><span class="t-in1">GP18</span></td>
+              <td><span class="t-in2">GP19</span></td>
+              <td>DRV8871</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="wiring-note" style="margin-top:8px">IN1 = first constructor argument, IN2 = second. <code style="font-family:var(--mono);font-size:12px;background:var(--surface3);padding:1px 5px;border-radius:4px;color:var(--accent)">Motor(11, 10)</code> &rarr; M1 with IN1=GP11, IN2=GP10.</p>
+      </div>
+
+      <!-- ── 5. SENSOR PIN TABLE ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Sensor &amp; communication pins</div>
+        <table class="pin-table">
+          <thead>
+            <tr>
+              <th>Device</th><th>Protocol</th><th>Signal</th><th>Pico pin</th><th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>BNO055 IMU</strong></td><td>I&#178;C0</td>
+              <td>SDA</td><td><span class="t-i2c">GP0</span></td>
+              <td>3.3 V logic &mdash; I&#178;C address 0x28</td>
+            </tr>
+            <tr>
+              <td></td><td></td>
+              <td>SCL</td><td><span class="t-i2c">GP1</span></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td><td></td>
+              <td>Power</td><td><span class="t-pwr">3V3</span></td>
+              <td>Pico 3.3 V pin</td>
+            </tr>
+            <tr>
+              <td></td><td></td>
+              <td>Ground</td><td><span class="t-gnd">GND</span></td>
+              <td>Shared rail</td>
+            </tr>
+            <tr>
+              <td><strong>Ball Ring / Nextion</strong></td><td>UART1</td>
+              <td>TX (Pico sends)</td><td><span class="t-uart">GP8</span></td>
+              <td>&rarr; connect to device RX pin</td>
+            </tr>
+            <tr>
+              <td></td><td></td>
+              <td>RX (Pico receives)</td><td><span class="t-uart">GP9</span></td>
+              <td>&larr; connect to device TX pin</td>
+            </tr>
+            <tr>
+              <td></td><td></td>
+              <td>Ground</td><td><span class="t-gnd">GND</span></td>
+              <td>Shared rail</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── 6. POWER WARNING ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Power &amp; grounding rules</div>
+        <div class="power-warning">
+          <strong>&#9888; Motor power must come from a separate battery &mdash; not from Pico VSYS.</strong>
+          <ul>
+            <li>Connect your motor battery positive terminal to <strong>VM</strong> on each DRV8871.</li>
+            <li>Do <strong>not</strong> connect the motor battery to Pico VSYS or 3V3 &mdash; this will damage the Pico.</li>
+            <li>Connect the motor battery negative (GND) to the <strong>shared GND rail</strong> alongside Pico GND.</li>
+            <li>All GND pins must share the same rail: Pico GND, each DRV8871 GND, IMU GND, and connector GND.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ── 7. DRV8871 OPERATION CARDS ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">DRV8871 operation notes</div>
+        <div class="wiring-notes-grid">
+          <div class="wiring-note-card">
+            <h5>Positive command</h5>
+            <p>Set IN1 to a <code>duty_u16</code> value and IN2 to zero. The motor runs in one direction.</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Negative command</h5>
+            <p>Set IN2 to a <code>duty_u16</code> value and IN1 to zero. The motor runs in the other direction.</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Stop / coast</h5>
+            <p>Set both IN1 and IN2 to zero. The motor coasts freely (not actively braked).</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Two-input rule</h5>
+            <p>Only one of IN1 / IN2 carries a duty value at any time. Setting both non-zero simultaneously is invalid and may damage the driver.</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Speed control</h5>
+            <p>PWM duty cycle ranges from 0 to 65535 on the Pico. A value of 30&thinsp;000 is roughly half speed.</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Shared ground</h5>
+            <p>Pico GND, every DRV GND, IMU GND, and sensor connector GND must all tie to the same common rail.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: progress
+    description: Module progress operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /progress:
+    get:
+      operationId: getProgress
+      tags: [progress]
+      summary: Get module progress for the current session
+      responses:
+        "200":
+          description: Progress data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Progress"
+    post:
+      operationId: saveProgress
+      tags: [progress]
+      summary: Save module progress for the current session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProgressInput"
+      responses:
+        "200":
+          description: Saved progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Progress"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Progress:
+      type: object
+      required:
+        - modules
+      properties:
+        modules:
+          type: object
+          additionalProperties:
+            type: boolean
+        updatedAt:
+          type: ["string", "null"]
+          description: ISO 8601 timestamp of the last server update
+    ProgressInput:
+      type: object
+      required:
+        - modules
+      properties:
+        modules:
+          type: object
+          additionalProperties:
+            type: boolean
