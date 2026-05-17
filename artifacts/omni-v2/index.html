@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Omni V2 Learning Platform</title>
-  <meta name="description" content="Learn to code an X-configuration omni robot with MicroPython on Raspberry Pi Pico." />
+  <title>Robotics Academy — Omni &amp; Maze Rescue</title>
+  <meta name="description" content="Two robotics courses: Omni robot (Pico/MicroPython, 9 modules) and RoboCup Maze Rescue (SPIKE/Python, 6 modules + Python pathway)." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -12,7 +12,50 @@
 </head>
 <body>
 
-<div class="layout">
+<!-- ===== COURSE HUB LANDING PAGE ===== -->
+<div id="course-hub" class="hub-screen">
+  <div class="hub-inner">
+    <div class="hub-header">
+      <span class="hub-academy-badge">Robotics Academy</span>
+      <h1 class="hub-title">Choose Your <em>Mission</em></h1>
+      <p class="hub-subtitle">Two complete courses. Pick your robot and start building.</p>
+    </div>
+    <div class="hub-cards">
+
+      <!-- Omni Robot Course -->
+      <div class="hub-card hub-card--omni" data-course="omni">
+        <span class="hub-card-count">9 Modules</span>
+        <div class="hub-card-icon">&#9881;</div>
+        <h2 class="hub-card-title">Omni Robot Course</h2>
+        <p class="hub-card-desc">Build and code an X-configuration omni-wheel robot on a Raspberry Pi Pico. Nine progressive modules cover motor control, kinematics, sensors, IMU heading hold, and autonomous ball chasing.</p>
+        <div class="hub-card-pills">
+          <span class="hub-pill">Omni Drive</span>
+          <span class="hub-pill">Raspberry Pi Pico</span>
+          <span class="hub-pill">MicroPython</span>
+        </div>
+        <div class="hub-card-cta">Enter Course &#8594;</div>
+      </div>
+
+      <!-- Maze Rescue Course -->
+      <div class="hub-card hub-card--maze" data-course="maze">
+        <span class="hub-card-count">6 Modules</span>
+        <div class="hub-card-icon">&#127987;</div>
+        <h2 class="hub-card-title">Maze Rescue Course</h2>
+        <p class="hub-card-desc">Program a LEGO SPIKE robot to navigate a RoboCup rescue maze, detect victims with colour sensors, and score points in competition. Includes a full 19-stage Python lesson pathway.</p>
+        <div class="hub-card-pills">
+          <span class="hub-pill">RoboCup Maze</span>
+          <span class="hub-pill">LEGO SPIKE</span>
+          <span class="hub-pill">Python</span>
+        </div>
+        <div class="hub-card-cta">Enter Course &#8594;</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== OMNI ROBOT COURSE ===== -->
+<div id="omni-course" class="layout" style="display:none">
 
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
@@ -24,6 +67,10 @@
           <span class="brand-sub">Learning Platform</span>
         </div>
       </div>
+    </div>
+
+    <div class="hub-back-wrap">
+      <a class="hub-back-btn" href="#" data-hub-back>&#8592; Course Hub</a>
     </div>
 
     <div class="progress-section">
@@ -2436,7 +2483,1496 @@ def update_display(uart, heading, ball, mode, battery):
     </section>
 
   </main>
-</div>
+</div><!-- end #omni-course -->
+
+<!-- ===== MAZE RESCUE COURSE ===== -->
+<div id="maze-course" class="layout" style="display:none">
+
+  <!-- MAZE SIDEBAR -->
+  <aside class="sidebar" id="maze-sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon maze-brand-icon">&#127987;</div>
+        <div class="brand-text">
+          <span class="brand-title">Maze Rescue</span>
+          <span class="brand-sub">RoboCup Learning</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hub-back-wrap">
+      <a class="hub-back-btn" href="#" data-hub-back>&#8592; Course Hub</a>
+    </div>
+
+    <nav class="module-nav">
+      <a class="nav-item" href="#" data-target="maze-home">
+        <span class="nav-icon">&#8962;</span>
+        <span class="nav-label">Mission Control</span>
+      </a>
+      <div class="nav-sep"></div>
+      <a class="nav-item" href="#" data-target="maze-challenge">
+        <span class="nav-icon">&#127937;</span>
+        <span class="nav-label">1. The Challenge</span>
+      </a>
+      <a class="nav-item" href="#" data-target="maze-build">
+        <span class="nav-icon">&#128295;</span>
+        <span class="nav-label">2. Build Your Robot</span>
+      </a>
+      <a class="nav-item" href="#" data-target="maze-navigate">
+        <span class="nav-icon">&#128506;</span>
+        <span class="nav-label">3. Navigate the Maze</span>
+      </a>
+      <a class="nav-item" href="#" data-target="maze-victims">
+        <span class="nav-icon">&#128269;</span>
+        <span class="nav-label">4. Find the Victims</span>
+      </a>
+      <a class="nav-item" href="#" data-target="maze-bonuses">
+        <span class="nav-icon">&#11088;</span>
+        <span class="nav-label">5. Score Bonuses</span>
+      </a>
+      <div class="nav-sep"></div>
+      <a class="nav-item" href="#" data-target="maze-python">
+        <span class="nav-icon">&#128013;</span>
+        <span class="nav-label">Python Lessons</span>
+      </a>
+      <a class="nav-item" href="#" data-target="maze-checklist">
+        <span class="nav-icon">&#9989;</span>
+        <span class="nav-label">Competition Checklist</span>
+      </a>
+      <a class="nav-item" href="#" data-target="maze-resources">
+        <span class="nav-icon">&#128218;</span>
+        <span class="nav-label">Resources</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAZE TOPBAR (mobile) -->
+  <div class="topbar">
+    <button class="hamburger" id="maze-hamburger" aria-label="Open menu">&#9776;</button>
+    <span class="topbar-title">Maze Rescue</span>
+    <button class="hub-back-topbar" onclick="goToCourse('hub')">&#8592; Hub</button>
+  </div>
+
+  <main class="content">
+
+    <!-- ==================== MAZE HOME ==================== -->
+    <section class="page maze-page" id="maze-home">
+      <div class="module-header">
+        <div class="mod-badge">Mission Control</div>
+        <h1 class="mod-title">RoboCup Maze Rescue</h1>
+        <p class="mod-subtitle">Navigate a rescue maze, detect victims, and score points in competition.</p>
+      </div>
+
+      <div class="explain-box">
+        <p>In RoboCup Rescue Maze your robot autonomously navigates a maze of tiles, finds coloured victim markers on the floor, and guides them to an evacuation zone — all without any human control. Work through the six modules below in order, then use the Python Lessons pathway to learn every code skill you need from scratch.</p>
+      </div>
+
+      <h2 class="section-title">Course Modules</h2>
+      <div class="module-grid">
+        <div class="module-card" data-goto="maze-challenge">
+          <div class="module-card-header">
+            <span class="mod-badge mod-badge--maze">Module 1</span>
+          </div>
+          <h3 class="module-card-title">The Challenge</h3>
+          <p class="module-card-desc">Learn the arena layout, scoring rules, and victim types before you write a single line of code.</p>
+        </div>
+        <div class="module-card" data-goto="maze-build">
+          <div class="module-card-header">
+            <span class="mod-badge mod-badge--maze">Module 2</span>
+          </div>
+          <h3 class="module-card-title">Build Your Robot</h3>
+          <p class="module-card-desc">Understand LEGO SPIKE hardware, sensor placement, and size limits for a competition-ready build.</p>
+        </div>
+        <div class="module-card" data-goto="maze-navigate">
+          <div class="module-card-header">
+            <span class="mod-badge mod-badge--maze">Module 3</span>
+          </div>
+          <h3 class="module-card-title">Navigate the Maze</h3>
+          <p class="module-card-desc">Code a wall-following algorithm so your robot drives through the maze without getting stuck.</p>
+        </div>
+        <div class="module-card" data-goto="maze-victims">
+          <div class="module-card-header">
+            <span class="mod-badge mod-badge--maze">Module 4</span>
+          </div>
+          <h3 class="module-card-title">Find the Victims</h3>
+          <p class="module-card-desc">Use your colour sensor to detect green, red, and black victim markers and signal each one found.</p>
+        </div>
+        <div class="module-card" data-goto="maze-bonuses">
+          <div class="module-card-header">
+            <span class="mod-badge mod-badge--maze">Module 5</span>
+          </div>
+          <h3 class="module-card-title">Score Bonuses</h3>
+          <p class="module-card-desc">Detect the silver exit tile, avoid black hazards, count victims, and enter the evacuation zone.</p>
+        </div>
+        <div class="module-card" data-goto="maze-python">
+          <div class="module-card-header">
+            <span class="mod-badge mod-badge--maze">19 Stages</span>
+          </div>
+          <h3 class="module-card-title">Python Lessons</h3>
+          <p class="module-card-desc">A step-by-step Python pathway covering motors, sensors, loops, decisions, and the full competition program.</p>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="next-btn" data-goto="maze-challenge">Start: Module 1 — The Challenge &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== MODULE 1: THE CHALLENGE ==================== -->
+    <section class="page maze-page" id="maze-challenge">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">Module 1</div>
+        <h1 class="mod-title">The Challenge</h1>
+        <p class="mod-subtitle">Learn the arena, scoring rules, and victim types before writing any code.</p>
+      </div>
+
+      <h2 class="section-title">What is RoboCup Rescue Maze?</h2>
+      <div class="explain-box">
+        <p>RoboCup Rescue Maze is an international robotics competition where fully autonomous robots navigate a maze-like arena. The maze is built from 30 cm × 30 cm tiles connected by walls, ramps, and openings. Victims — coloured paper squares — are placed on the floor tiles. Your robot must find them, signal each one, and eventually reach a safe evacuation zone.</p>
+        <p>You have <strong>8 minutes</strong> per run. The more of the maze you explore and the more victims you correctly identify, the higher your score.</p>
+      </div>
+
+      <h2 class="section-title">Arena Overview</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-title">&#127963; Floor Tiles</div>
+          <p class="info-card-body">Each tile is 30 cm × 30 cm. The maze is built from many tiles joined by wall sections and gaps that your robot must drive through.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#127774; Ramps</div>
+          <p class="info-card-body">Some sections have sloped ramp tiles connecting different height levels. Successfully crossing ramps earns a reliability multiplier bonus.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#9888; Hazard Tiles</div>
+          <p class="info-card-body">Black tiles are danger zones representing holes or pits. Your robot must detect and avoid them — do NOT drive over the edge.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#127358; Evacuation Zone</div>
+          <p class="info-card-body">A designated chamber at the end of the maze. Driving into it and reporting your victim count earns the biggest scoring bonus.</p>
+        </div>
+      </div>
+
+      <h2 class="section-title">Victim Types</h2>
+      <div class="victim-grid">
+        <div class="victim-chip victim-chip--unharmed">
+          <div class="victim-chip-label">&#128994; Unharmed</div>
+          <div class="victim-chip-desc">Green or yellow marker. Full points for detection and rescue.</div>
+        </div>
+        <div class="victim-chip victim-chip--harmed">
+          <div class="victim-chip-label">&#128308; Harmed</div>
+          <div class="victim-chip-desc">Red marker. Points for detection; rescue still counts.</div>
+        </div>
+        <div class="victim-chip victim-chip--dead">
+          <div class="victim-chip-label">&#9899; Dead</div>
+          <div class="victim-chip-desc">Black marker. Detect correctly and do NOT try to rescue it.</div>
+        </div>
+        <div class="victim-chip victim-chip--silver">
+          <div class="victim-chip-label">&#11036; Silver Exit Tile</div>
+          <div class="victim-chip-desc">Highly reflective silver floor tile. Signals the entry to the evacuation zone.</div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Scoring Summary</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Action</th><th>Points</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Visit a new tile (without needing a restart)</td><td>+10 per tile</td></tr>
+            <tr><td>Cross a ramp reliably</td><td>Reliability multiplier</td></tr>
+            <tr><td>Detect an unharmed victim (green/yellow)</td><td>+25</td></tr>
+            <tr><td>Detect a harmed victim (red)</td><td>+25</td></tr>
+            <tr><td>Correctly avoid a dead victim (black)</td><td>+10</td></tr>
+            <tr><td>Find the silver exit tile</td><td>+25</td></tr>
+            <tr><td>Enter the evacuation zone</td><td>+25</td></tr>
+            <tr><td>Reliability bonus (no restart needed)</td><td>+25% of run total</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warn-box">
+        <strong>Restart penalty:</strong> Every time you manually place the robot back, your score resets for that section. The goal is to run as far as possible without any human intervention.
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-home">&#8592; Mission Control</button>
+        <button class="next-btn" data-goto="maze-build">Next: Build Your Robot &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== MODULE 2: BUILD ==================== -->
+    <section class="page maze-page" id="maze-build">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">Module 2</div>
+        <h1 class="mod-title">Build Your Robot</h1>
+        <p class="mod-subtitle">Choose the right hardware and position your sensors for success.</p>
+      </div>
+
+      <h2 class="section-title">Your Hardware: LEGO SPIKE Prime</h2>
+      <div class="explain-box">
+        <p>The SPIKE Prime hub is the brain of your robot. It has a built-in gyroscope for measuring rotation, a 5 × 5 LED matrix for displaying information, and six ports for motors and sensors. You control everything in <strong>SPIKE Python</strong> — the Python environment built into the hub's firmware.</p>
+      </div>
+
+      <h2 class="section-title">Recommended Port Setup</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-title">&#9881; Drive Motors — Ports A &amp; B</div>
+          <p class="info-card-body">Use a <code>MotorPair</code> on A and B for driving. Larger wheels give more speed; smaller wheels give more torque and precision on turns.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#128269; Colour Sensor — Port C</div>
+          <p class="info-card-body">Mount pointing straight down at the floor, 5–10 mm above the tile surface, near the front of the robot. It detects victim colours and tile reflectivity.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#128268; Front Distance — Port D</div>
+          <p class="info-card-body">A distance sensor facing forward detects walls ahead. This tells your robot when to stop and turn rather than driving straight into a wall.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#128268; Side Distance — Port E</div>
+          <p class="info-card-body">A second distance sensor on the left (or right) side measures the gap to the wall. This is the core of the wall-following algorithm.</p>
+        </div>
+      </div>
+
+      <h2 class="section-title">Size Rules</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Rule</th><th>Limit</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Robot must start inside the start tile</td><td>30 cm × 30 cm</td></tr>
+            <tr><td>Keep height low for reliable ramp crossing</td><td>&lt; 25 cm recommended</td></tr>
+            <tr><td>Fully autonomous during the run — no remote control</td><td>Required</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title">Build Tips</h2>
+      <div class="tip-list">
+        <div class="tip-item">
+          <span class="tip-num">1</span>
+          <div><strong>Keep the centre of mass low.</strong> A top-heavy robot tips on ramps. Mount the hub as low as possible and keep heavy parts close to the base.</div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">2</span>
+          <div><strong>Lock sensors rigidly.</strong> A colour sensor that wobbles gives inconsistent readings. Brace it firmly against the frame with at least two connection points.</div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">3</span>
+          <div><strong>Test on the real arena.</strong> Colour sensor values depend on floor colour and ambient lighting. Always calibrate on the actual competition tiles.</div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-num">4</span>
+          <div><strong>Use large drive wheels.</strong> They are less likely to snag on tile edges and give smoother wall-following at speed.</div>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-challenge">&#8592; The Challenge</button>
+        <button class="next-btn" data-goto="maze-navigate">Next: Navigate the Maze &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== MODULE 3: NAVIGATE ==================== -->
+    <section class="page maze-page" id="maze-navigate">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">Module 3</div>
+        <h1 class="mod-title">Navigate the Maze</h1>
+        <p class="mod-subtitle">Wall-following algorithm and turning logic to move through the arena.</p>
+      </div>
+
+      <h2 class="section-title">The Wall-Following Strategy</h2>
+      <div class="explain-box">
+        <p>The simplest reliable strategy is the <strong>left-hand rule</strong>: always try to keep a wall on your left. If the left wall disappears, turn left to find it again. If a wall appears ahead, turn right. This will eventually get your robot through most maze layouts.</p>
+        <p>You need two sensors: the <strong>left distance sensor</strong> to measure the gap to the left wall, and the <strong>front distance sensor</strong> to detect walls ahead.</p>
+      </div>
+
+      <h2 class="section-title">Decision Logic</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-title">&#128308; Wall Ahead</div>
+          <p class="info-card-body">Front sensor reads &lt; 15 cm. Stop immediately and turn right 90°.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#128993; No Left Wall</div>
+          <p class="info-card-body">Left sensor reads &gt; 25 cm or None. Arc left gently to find the wall.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#128308; Too Close to Wall</div>
+          <p class="info-card-body">Left sensor reads &lt; 8 cm. Steer right gently to open up the gap.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#128994; Following Correctly</div>
+          <p class="info-card-body">Left sensor 8–25 cm. Drive straight at full speed.</p>
+        </div>
+      </div>
+
+      <h2 class="section-title">Wall-Follower Starter Code</h2>
+      <div class="code-block-wrap">
+        <div class="code-block-header">
+          <span class="code-label">Python — SPIKE Prime</span>
+          <button class="copy-btn" data-copy-target="maze-nav-code">Copy Code</button>
+        </div>
+        <pre class="code-block" id="maze-nav-code">from spike import PrimeHub, MotorPair, DistanceSensor
+from spike.control import wait_for_seconds
+
+hub   = PrimeHub()
+drive = MotorPair('A', 'B')
+front = DistanceSensor('D')
+left  = DistanceSensor('E')
+
+FRONT_STOP   = 15    # cm — wall detected ahead
+LEFT_MIN     = 8     # cm — too close to left wall
+LEFT_MAX     = 25    # cm — lost the left wall
+DRIVE_SPEED  = 50    # 0–100
+TURN_DEGREES = 200   # degrees of wheel rotation for ~90 degree turn
+
+while True:
+    f = front.get_distance_cm()
+    l = left.get_distance_cm()
+
+    if f is not None and f < FRONT_STOP:
+        # Wall ahead — stop and turn right
+        drive.stop()
+        drive.move_tank(TURN_DEGREES, 'degrees',
+                        left_speed=50, right_speed=-50)
+
+    elif l is None or l > LEFT_MAX:
+        # No left wall — arc left to find it
+        drive.start(steering=-30, speed=DRIVE_SPEED)
+
+    elif l < LEFT_MIN:
+        # Too close — steer right
+        drive.start(steering=30, speed=DRIVE_SPEED)
+
+    else:
+        # Good gap — drive straight
+        drive.start(steering=0, speed=DRIVE_SPEED)
+
+    wait_for_seconds(0.05)</pre>
+      </div>
+
+      <div class="explain-box">
+        <p><strong>Tuning tip:</strong> The constants <code>FRONT_STOP</code>, <code>LEFT_MIN</code>, <code>LEFT_MAX</code>, and <code>TURN_DEGREES</code> need adjusting for your specific robot and arena surface. Start with the values above, run the robot, and tweak one constant at a time until turns are clean and wall-following is smooth.</p>
+      </div>
+
+      <h2 class="section-title">Precise Turns with the Built-in Gyro</h2>
+      <div class="explain-box">
+        <p>The SPIKE hub has a gyroscope you can read with <code>hub.motion_sensor.get_yaw_angle()</code>. Measuring how many degrees the robot has actually rotated gives you much more precise 90° turns than relying on a fixed wheel-degree count:</p>
+      </div>
+      <div class="code-block-wrap">
+        <div class="code-block-header">
+          <span class="code-label">Python — gyro turn</span>
+          <button class="copy-btn" data-copy-target="maze-gyro-code">Copy Code</button>
+        </div>
+        <pre class="code-block" id="maze-gyro-code">def turn_right_90():
+    start_yaw = hub.motion_sensor.get_yaw_angle()
+    target    = start_yaw + 90
+    drive.start(steering=100, speed=35)
+    while hub.motion_sensor.get_yaw_angle() < target:
+        pass
+    drive.stop()</pre>
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-build">&#8592; Build Your Robot</button>
+        <button class="next-btn" data-goto="maze-victims">Next: Find the Victims &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== MODULE 4: VICTIMS ==================== -->
+    <section class="page maze-page" id="maze-victims">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">Module 4</div>
+        <h1 class="mod-title">Find the Victims</h1>
+        <p class="mod-subtitle">Use your colour sensor to detect and identify victim markers on the floor.</p>
+      </div>
+
+      <h2 class="section-title">How the Colour Sensor Works</h2>
+      <div class="explain-box">
+        <p>The SPIKE colour sensor shines light onto the surface and measures how much bounces back. From this it reports the <strong>colour name</strong> (red, green, yellow, black, white, blue or None) and the <strong>reflected light intensity</strong> (0 = very dark, 100 = very bright/reflective). You use both values together to classify what the robot has driven over.</p>
+      </div>
+
+      <h2 class="section-title">What Each Victim Looks Like to the Sensor</h2>
+      <div class="victim-grid">
+        <div class="victim-chip victim-chip--unharmed">
+          <div class="victim-chip-label">Unharmed</div>
+          <div class="victim-chip-desc"><code>get_color()</code> returns <strong>'green'</strong> or <strong>'yellow'</strong>. Full detection points.</div>
+        </div>
+        <div class="victim-chip victim-chip--harmed">
+          <div class="victim-chip-label">Harmed</div>
+          <div class="victim-chip-desc"><code>get_color()</code> returns <strong>'red'</strong>. Detection points; robot still moves on.</div>
+        </div>
+        <div class="victim-chip victim-chip--dead">
+          <div class="victim-chip-label">Dead</div>
+          <div class="victim-chip-desc"><code>get_color()</code> returns <strong>'black'</strong>. Detect and leave — do NOT rescue.</div>
+        </div>
+        <div class="victim-chip victim-chip--silver">
+          <div class="victim-chip-label">Silver Exit Tile</div>
+          <div class="victim-chip-desc">Very high <code>get_reflected_light_intensity()</code> (&gt; 85). Evacuation zone is nearby.</div>
+        </div>
+      </div>
+
+      <h2 class="section-title">Victim Detection Code</h2>
+      <div class="code-block-wrap">
+        <div class="code-block-header">
+          <span class="code-label">Python — detect and signal</span>
+          <button class="copy-btn" data-copy-target="maze-victim-code">Copy Code</button>
+        </div>
+        <pre class="code-block" id="maze-victim-code">from spike import PrimeHub, MotorPair, ColorSensor
+from spike.control import wait_for_seconds
+
+hub   = PrimeHub()
+drive = MotorPair('A', 'B')
+color = ColorSensor('C')
+
+unharmed_count = 0
+harmed_count   = 0
+
+def check_for_victim():
+    global unharmed_count, harmed_count
+    col   = color.get_color()
+    light = color.get_reflected_light_intensity()
+
+    if light > 85:
+        # Silver exit tile
+        drive.stop()
+        hub.light_matrix.show_image('STAR')
+        hub.speaker.beep(90, 1.0)
+        return 'silver'
+
+    elif col in ('green', 'yellow'):
+        # Unharmed victim
+        unharmed_count += 1
+        drive.stop()
+        hub.light_matrix.show_image('HAPPY')
+        hub.speaker.beep(80, 0.4)
+        hub.speaker.beep(90, 0.4)
+        wait_for_seconds(1)
+        return 'unharmed'
+
+    elif col == 'red':
+        # Harmed victim
+        harmed_count += 1
+        drive.stop()
+        hub.light_matrix.show_image('SAD')
+        hub.speaker.beep(50, 0.6)
+        wait_for_seconds(1)
+        return 'harmed'
+
+    elif col == 'black':
+        # Dead victim — stop briefly but do not rescue
+        drive.stop()
+        hub.light_matrix.show_image('NO')
+        wait_for_seconds(0.5)
+        return 'dead'
+
+    return None  # regular floor tile</pre>
+      </div>
+
+      <div class="explain-box">
+        <p><strong>Important:</strong> Call <code>check_for_victim()</code> on every iteration of your navigation loop. When a victim is found, stop and give a clear signal before continuing. The judge must be able to confirm that your robot recognised each victim.</p>
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-navigate">&#8592; Navigate the Maze</button>
+        <button class="next-btn" data-goto="maze-bonuses">Next: Score Bonuses &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== MODULE 5: BONUSES ==================== -->
+    <section class="page maze-page" id="maze-bonuses">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">Module 5</div>
+        <h1 class="mod-title">Score Bonuses</h1>
+        <p class="mod-subtitle">Avoid black hazards, find the silver tile, count victims, and enter the evacuation zone.</p>
+      </div>
+
+      <h2 class="section-title">Bonus Opportunities</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-title">&#11036; Silver Exit Tile</div>
+          <p class="info-card-body">Detect it with reflected light intensity &gt; 85. Stop, signal, then drive into the evacuation zone directly ahead.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#9899; Black Hazard Tile</div>
+          <p class="info-card-body"><code>get_color() == 'black'</code> AND very low light intensity. Stop and reverse before the robot falls off the edge.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#128290; Victim Count Display</div>
+          <p class="info-card-body">Show total victims on the LED matrix at the end of the run. Judges verify your count against the actual markers in the arena.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">&#127358; Evacuation Zone</div>
+          <p class="info-card-body">After finding the silver tile, drive into the evacuation zone. Points are awarded for entering and for your reliability score.</p>
+        </div>
+      </div>
+
+      <h2 class="section-title">Hazard Avoidance</h2>
+      <div class="code-block-wrap">
+        <div class="code-block-header">
+          <span class="code-label">Python — black tile hazard</span>
+          <button class="copy-btn" data-copy-target="maze-hazard-code">Copy Code</button>
+        </div>
+        <pre class="code-block" id="maze-hazard-code">def check_hazard():
+    col   = color.get_color()
+    light = color.get_reflected_light_intensity()
+    # Black tile: very dark floor AND colour reads black
+    if col == 'black' and light < 15:
+        drive.stop()
+        hub.light_matrix.show_image('NO')
+        # Back up 15 cm, then turn away
+        drive.move(-15, 'cm', steering=0, speed=40)
+        drive.move_tank(200, 'degrees',
+                        left_speed=50, right_speed=-50)
+        return True
+    return False</pre>
+      </div>
+
+      <h2 class="section-title">Display Victim Count</h2>
+      <div class="code-block-wrap">
+        <div class="code-block-header">
+          <span class="code-label">Python — show totals on LED matrix</span>
+          <button class="copy-btn" data-copy-target="maze-display-code">Copy Code</button>
+        </div>
+        <pre class="code-block" id="maze-display-code">def display_victims():
+    total = unharmed_count + harmed_count
+    hub.light_matrix.write(str(unharmed_count))   # unharmed
+    wait_for_seconds(2)
+    hub.light_matrix.write(str(total))            # total
+    wait_for_seconds(2)
+    hub.light_matrix.show_image('HAPPY')</pre>
+      </div>
+
+      <h2 class="section-title">Entering the Evacuation Zone</h2>
+      <div class="code-block-wrap">
+        <div class="code-block-header">
+          <span class="code-label">Python — silver tile + evacuation</span>
+          <button class="copy-btn" data-copy-target="maze-evac-code">Copy Code</button>
+        </div>
+        <pre class="code-block" id="maze-evac-code">def enter_evacuation_zone():
+    # Called after silver tile detection
+    hub.speaker.beep(90, 0.3)
+    hub.speaker.beep(90, 0.3)
+    hub.light_matrix.show_image('STAR')
+    # Drive forward into the zone
+    drive.move(50, 'cm', steering=0, speed=40)
+    drive.stop()
+    display_victims()</pre>
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-victims">&#8592; Find the Victims</button>
+        <button class="next-btn" data-goto="maze-python">Next: Python Lessons &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== PYTHON LESSONS ==================== -->
+    <section class="page maze-page" id="maze-python">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">7 Phases · 19 Stages</div>
+        <h1 class="mod-title">Python Lessons</h1>
+        <p class="mod-subtitle">Learn Python step by step — from your first import to a full competition program.</p>
+      </div>
+
+      <div class="explain-box">
+        <p>These lessons teach you exactly the Python skills you need for the maze rescue challenge. Work through each stage in order — every stage builds on the last. By Stage 19 you will have a complete, competition-ready program.</p>
+      </div>
+
+      <!-- ── PHASE 1 ── -->
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-num">Phase 1</span>
+          <span class="phase-title">Getting Started — Stages 1–2</span>
+        </div>
+        <div class="phase-stages">
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 1</span>
+              <span class="stage-title">Program Structure</span>
+            </div>
+            <div class="stage-body">
+              <p>Every SPIKE Python program starts by importing the hardware you want to use. The <code>from spike import ...</code> line loads the parts of the SPIKE library you need. Create the hub object first — it gives you access to the LEDs, buttons, and speaker.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s1">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s1">from spike import PrimeHub, MotorPair, ColorSensor, DistanceSensor
+from spike.control import wait_for_seconds
+
+hub = PrimeHub()
+
+# Show a happy face to confirm the program started
+hub.light_matrix.show_image('HAPPY')
+wait_for_seconds(2)
+hub.light_matrix.off()</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 2</span>
+              <span class="stage-title">The Main Loop</span>
+            </div>
+            <div class="stage-body">
+              <p>A competition program runs continuously until time runs out. The <code>while True:</code> loop repeats for ever. Everything your robot does during a run goes inside this loop. Use a button press to start so the robot waits until you are ready.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s2">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s2">from spike import PrimeHub
+from spike.control import wait_for_seconds
+
+hub = PrimeHub()
+
+# Wait for left button press before starting the run
+hub.left_button.wait_until_pressed()
+hub.light_matrix.show_image('GO')
+
+while True:
+    # All robot behaviour goes in here
+    hub.light_matrix.show_image('SQUARE')
+    wait_for_seconds(0.5)
+    hub.light_matrix.off()
+    wait_for_seconds(0.5)</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PHASE 2 ── -->
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-num">Phase 2</span>
+          <span class="phase-title">Drive the Robot — Stages 3–4</span>
+        </div>
+        <div class="phase-stages">
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 3</span>
+              <span class="stage-title">Motor Pairs</span>
+            </div>
+            <div class="stage-body">
+              <p>A <code>MotorPair</code> controls your two drive motors together. Pass the port letters as strings. The <code>move()</code> method drives a fixed distance in centimetres. Use a negative distance to go in reverse.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s3">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s3">from spike import MotorPair
+from spike.control import wait_for_seconds
+
+drive = MotorPair('A', 'B')  # A = left motor, B = right motor
+
+# Drive forward 30 cm at 50% speed, steering 0 means straight
+drive.move(30, 'cm', steering=0, speed=50)
+wait_for_seconds(0.5)
+
+# Reverse 10 cm
+drive.move(-10, 'cm', steering=0, speed=50)
+drive.stop()</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 4</span>
+              <span class="stage-title">Forward, Turn, Stop</span>
+            </div>
+            <div class="stage-body">
+              <p><code>move_tank()</code> spins each motor independently — this is how you turn on the spot. To turn right: left motor forward, right motor backward. Reverse both speeds for a left turn. Adjust the degree count until you get a reliable 90°.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s4">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s4">from spike import MotorPair
+from spike.control import wait_for_seconds
+
+drive = MotorPair('A', 'B')
+
+# Square test: forward 30 cm then turn right, 4 times
+for _ in range(4):
+    drive.move(30, 'cm', steering=0, speed=50)
+    wait_for_seconds(0.1)
+    # Turn right approximately 90 degrees
+    drive.move_tank(200, 'degrees',
+                    left_speed=50, right_speed=-50)
+    wait_for_seconds(0.1)
+
+drive.stop()</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PHASE 3 ── -->
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-num">Phase 3</span>
+          <span class="phase-title">Read Sensors — Stages 5–6</span>
+        </div>
+        <div class="phase-stages">
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 5</span>
+              <span class="stage-title">Distance Sensor</span>
+            </div>
+            <div class="stage-body">
+              <p><code>get_distance_cm()</code> returns a number in centimetres, or <code>None</code> when nothing is in range (beyond about 200 cm). Always check for <code>None</code> before comparing — comparing <code>None &lt; 15</code> will crash your program.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s5">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s5">from spike import MotorPair, DistanceSensor
+from spike.control import wait_for_seconds
+
+drive = MotorPair('A', 'B')
+front = DistanceSensor('D')
+
+# Drive forward until a wall is 15 cm away
+drive.start(steering=0, speed=50)
+
+while True:
+    dist = front.get_distance_cm()
+    if dist is not None and dist < 15:
+        drive.stop()
+        break
+    wait_for_seconds(0.05)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 6</span>
+              <span class="stage-title">Colour Sensor</span>
+            </div>
+            <div class="stage-body">
+              <p><code>get_color()</code> returns a string like <code>'red'</code>, <code>'green'</code>, <code>'yellow'</code>, <code>'black'</code>, <code>'white'</code>, or <code>None</code>. <code>get_reflected_light_intensity()</code> returns 0–100 — use it to detect the highly reflective silver tile.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s6">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s6">from spike import ColorSensor
+from spike.control import wait_for_seconds
+
+color = ColorSensor('C')
+
+# Log readings so you can calibrate thresholds
+while True:
+    col   = color.get_color()
+    light = color.get_reflected_light_intensity()
+    print('Color:', col, '  Light:', light)
+    wait_for_seconds(0.2)</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PHASE 4 ── -->
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-num">Phase 4</span>
+          <span class="phase-title">Follow Walls — Stages 7–9</span>
+        </div>
+        <div class="phase-stages">
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 7</span>
+              <span class="stage-title">Detect a Wall Ahead</span>
+            </div>
+            <div class="stage-body">
+              <p>The simplest navigation check: if the front sensor reads less than a threshold, stop and turn. Once you can reliably stop before a wall, you can add the wall-following logic on top.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s7">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s7">from spike import MotorPair, DistanceSensor
+from spike.control import wait_for_seconds
+
+drive = MotorPair('A', 'B')
+front = DistanceSensor('D')
+
+drive.start(steering=0, speed=50)
+
+while True:
+    dist = front.get_distance_cm()
+    if dist is not None and dist < 15:
+        drive.stop()
+        # Turn right when a wall is detected ahead
+        drive.move_tank(200, 'degrees',
+                        left_speed=50, right_speed=-50)
+    wait_for_seconds(0.05)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 8</span>
+              <span class="stage-title">Follow the Left Wall</span>
+            </div>
+            <div class="stage-body">
+              <p>Add the left sensor. Use proportional steering: too close → steer right; too far → steer left; just right → straight. This keeps the robot smoothly tracking the wall even when it drifts slightly.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s8">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s8">from spike import MotorPair, DistanceSensor
+from spike.control import wait_for_seconds
+
+drive = MotorPair('A', 'B')
+front = DistanceSensor('D')
+left  = DistanceSensor('E')
+
+TARGET_GAP = 12   # desired cm gap from left wall
+
+while True:
+    f = front.get_distance_cm()
+    l = left.get_distance_cm()
+
+    if f is not None and f < 15:
+        drive.stop()
+        drive.move_tank(200, 'degrees',
+                        left_speed=50, right_speed=-50)
+        continue
+
+    if l is None:
+        # No left wall — arc left to search for it
+        drive.start(steering=-40, speed=45)
+    else:
+        # Proportional correction
+        error = l - TARGET_GAP       # positive = too far from wall
+        steer = int(error * 2.5)     # scale error to steering value
+        steer = max(-50, min(50, steer))
+        drive.start(steering=steer, speed=50)
+
+    wait_for_seconds(0.05)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 9</span>
+              <span class="stage-title">Handle Dead Ends</span>
+            </div>
+            <div class="stage-body">
+              <p>A dead end has walls on all three sides: front, left, and right. The robot must turn 180° to escape. Check both the front and a right-side sensor before executing a U-turn.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s9">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s9">def handle_junction(front_sensor, right_sensor):
+    f = front_sensor.get_distance_cm()
+    r = right_sensor.get_distance_cm()
+
+    if f is not None and f < 15:
+        if r is None or r > 20:
+            # Open on the right — turn right
+            drive.move_tank(200, 'degrees',
+                            left_speed=50, right_speed=-50)
+        else:
+            # Dead end — U-turn (turn right twice)
+            drive.move_tank(400, 'degrees',
+                            left_speed=50, right_speed=-50)</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PHASE 5 ── -->
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-num">Phase 5</span>
+          <span class="phase-title">Detect Tiles — Stages 10–13</span>
+        </div>
+        <div class="phase-stages">
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 10</span>
+              <span class="stage-title">Read Floor Colours</span>
+            </div>
+            <div class="stage-body">
+              <p>Before writing your detection code, run this logging program over every tile type in the real arena — white floor, grey floor, green victim, red victim, black hazard, and the silver tile. Write down what the sensor reports for each one. Calibration values differ between arenas and lighting conditions.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python — colour logging</span>
+                  <button class="copy-btn" data-copy-target="maze-s10">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s10">from spike import ColorSensor
+from spike.control import wait_for_seconds
+
+color = ColorSensor('C')
+
+for _ in range(60):
+    col   = color.get_color()
+    light = color.get_reflected_light_intensity()
+    print(f'color={col}  light={light}')
+    wait_for_seconds(0.3)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 11</span>
+              <span class="stage-title">Detect the Black Hazard Tile</span>
+            </div>
+            <div class="stage-body">
+              <p>A black tile is dangerous — driving over it means falling off the edge. Detect it using both the colour name AND a low light intensity value, then reverse before the wheels go over.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s11">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s11">from spike import PrimeHub, MotorPair, ColorSensor
+from spike.control import wait_for_seconds
+
+hub   = PrimeHub()
+drive = MotorPair('A', 'B')
+color = ColorSensor('C')
+
+while True:
+    col   = color.get_color()
+    light = color.get_reflected_light_intensity()
+
+    if col == 'black' and light < 15:
+        # Hazard tile detected — back up and turn away
+        drive.stop()
+        hub.light_matrix.show_image('NO')
+        drive.move(-15, 'cm', steering=0, speed=40)
+        drive.move_tank(200, 'degrees',
+                        left_speed=50, right_speed=-50)
+    else:
+        drive.start(steering=0, speed=45)
+
+    wait_for_seconds(0.05)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 12</span>
+              <span class="stage-title">Detect the Silver Exit Tile</span>
+            </div>
+            <div class="stage-body">
+              <p>The silver tile is very reflective. Its <code>get_reflected_light_intensity()</code> value will be noticeably higher than any white floor tile. Set your threshold after testing on the real tile — typically above 85.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s12">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s12">from spike import PrimeHub, ColorSensor
+from spike.control import wait_for_seconds
+
+hub   = PrimeHub()
+color = ColorSensor('C')
+
+SILVER_THRESHOLD = 85   # tune this on the real tile!
+
+while True:
+    light = color.get_reflected_light_intensity()
+
+    if light >= SILVER_THRESHOLD:
+        hub.light_matrix.show_image('STAR')
+        hub.speaker.beep(90, 1.0)
+        print('Silver tile found!')
+        break   # exit loop and handle evacuation entry
+
+    wait_for_seconds(0.05)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 13</span>
+              <span class="stage-title">Classify Victim Colours</span>
+            </div>
+            <div class="stage-body">
+              <p>Write a single function that reads the sensor and returns a string describing what it found. Calling one clean function from your navigation loop is much easier to read and debug than writing all the if-statements inline every time.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s13">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s13">def classify_tile():
+    col   = color.get_color()
+    light = color.get_reflected_light_intensity()
+
+    if light >= 85:
+        return 'silver'
+    elif col in ('green', 'yellow'):
+        return 'unharmed'
+    elif col == 'red':
+        return 'harmed'
+    elif col == 'black' and light < 15:
+        return 'hazard'
+    else:
+        return 'floor'</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PHASE 6 ── -->
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-num">Phase 6</span>
+          <span class="phase-title">Handle Victims — Stages 14–17</span>
+        </div>
+        <div class="phase-stages">
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 14</span>
+              <span class="stage-title">Stop and Signal a Victim</span>
+            </div>
+            <div class="stage-body">
+              <p>When the robot finds a victim it must stop completely and give a visible or audible signal. Judges need to confirm the robot has detected the victim. A 1-second pause with a beep and an LED image is the minimum acceptable signal.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s14">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s14">def signal_victim(victim_type):
+    drive.stop()
+    if victim_type == 'unharmed':
+        hub.light_matrix.show_image('HAPPY')
+        hub.speaker.beep(80, 0.3)
+        hub.speaker.beep(90, 0.3)
+    elif victim_type == 'harmed':
+        hub.light_matrix.show_image('SAD')
+        hub.speaker.beep(50, 0.6)
+    wait_for_seconds(1.0)
+    hub.light_matrix.off()</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 15</span>
+              <span class="stage-title">Count Your Victims</span>
+            </div>
+            <div class="stage-body">
+              <p>Use global integers to count unharmed and harmed victims as you find them. This count is verified by the judges at the end of the run — make sure you only increment it when you genuinely detect a new victim.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s15">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s15">unharmed_count = 0
+harmed_count   = 0
+
+def handle_victim(victim_type):
+    global unharmed_count, harmed_count
+
+    if victim_type == 'unharmed':
+        unharmed_count += 1
+    elif victim_type == 'harmed':
+        harmed_count += 1
+
+    signal_victim(victim_type)
+    print(f'Unharmed: {unharmed_count}  Harmed: {harmed_count}')</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 16</span>
+              <span class="stage-title">Display the Victim Count</span>
+            </div>
+            <div class="stage-body">
+              <p>At the end of the run — or when you enter the evacuation zone — display the counts on the LED matrix so the judges can verify them. Show unharmed, then harmed, then the total.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s16">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s16">def show_final_count():
+    total = unharmed_count + harmed_count
+    hub.light_matrix.write('U' + str(unharmed_count))
+    wait_for_seconds(2)
+    hub.light_matrix.write('H' + str(harmed_count))
+    wait_for_seconds(2)
+    hub.light_matrix.write('T' + str(total))
+    wait_for_seconds(3)
+    hub.light_matrix.show_image('HAPPY')</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 17</span>
+              <span class="stage-title">Enter the Evacuation Zone</span>
+            </div>
+            <div class="stage-body">
+              <p>After detecting the silver tile, signal and then drive forward into the evacuation zone. Call <code>show_final_count()</code> once the robot is inside so the judges can see your score.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s17">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s17">def enter_evac():
+    hub.light_matrix.show_image('STAR')
+    hub.speaker.beep(90, 0.3)
+    hub.speaker.beep(90, 0.3)
+    wait_for_seconds(0.5)
+    # Drive into the evacuation zone
+    drive.move(40, 'cm', steering=0, speed=40)
+    drive.stop()
+    show_final_count()</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PHASE 7 ── -->
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-num">Phase 7</span>
+          <span class="phase-title">Full Mission — Stages 18–19</span>
+        </div>
+        <div class="phase-stages">
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 18</span>
+              <span class="stage-title">Combine Navigation and Detection</span>
+            </div>
+            <div class="stage-body">
+              <p>Merge the wall-following loop with tile classification. On every iteration, check the floor tile first. If it is a victim or the silver exit tile, handle it. Otherwise, continue navigating.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python</span>
+                  <button class="copy-btn" data-copy-target="maze-s18">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s18">hub.left_button.wait_until_pressed()
+
+while True:
+    # 1. Check what tile the robot is on
+    tile = classify_tile()
+
+    if tile == 'silver':
+        enter_evac()
+        break
+    elif tile in ('unharmed', 'harmed'):
+        handle_victim(tile)
+    elif tile == 'hazard':
+        drive.move(-15, 'cm', steering=0, speed=40)
+        drive.move_tank(200, 'degrees',
+                        left_speed=50, right_speed=-50)
+        continue
+
+    # 2. Navigate using wall-following
+    f = front.get_distance_cm()
+    l = left.get_distance_cm()
+
+    if f is not None and f < FRONT_STOP:
+        drive.stop()
+        drive.move_tank(TURN_DEGREES, 'degrees',
+                        left_speed=50, right_speed=-50)
+    elif l is None or l > LEFT_MAX:
+        drive.start(steering=-30, speed=DRIVE_SPEED)
+    elif l < LEFT_MIN:
+        drive.start(steering=30, speed=DRIVE_SPEED)
+    else:
+        drive.start(steering=0, speed=DRIVE_SPEED)
+
+    wait_for_seconds(0.05)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-card">
+            <div class="stage-header">
+              <span class="stage-num">Stage 19</span>
+              <span class="stage-title">Competition-Ready Program</span>
+            </div>
+            <div class="stage-body">
+              <p>The final program. All functions are defined at the top, constants are named so they are easy to tune, and the main loop ties everything together. Adjust the constant values before competition day.</p>
+              <div class="code-block-wrap">
+                <div class="code-block-header">
+                  <span class="code-label">Python — full competition program</span>
+                  <button class="copy-btn" data-copy-target="maze-s19">Copy Code</button>
+                </div>
+                <pre class="code-block" id="maze-s19">from spike import PrimeHub, MotorPair, ColorSensor, DistanceSensor
+from spike.control import wait_for_seconds
+
+# ── Hardware ──────────────────────────────────────────────────
+hub   = PrimeHub()
+drive = MotorPair('A', 'B')
+color = ColorSensor('C')
+front = DistanceSensor('D')
+left  = DistanceSensor('E')
+
+# ── Constants (tune before each competition) ──────────────────
+FRONT_STOP       = 15     # cm — wall ahead threshold
+LEFT_MIN         = 8      # cm — too close to left wall
+LEFT_MAX         = 25     # cm — left wall lost
+DRIVE_SPEED      = 50
+TURN_DEGREES     = 200    # wheel degrees for ~90 degree turn
+SILVER_THRESHOLD = 85     # reflected light % for silver tile
+
+# ── State ─────────────────────────────────────────────────────
+unharmed_count = 0
+harmed_count   = 0
+
+# ── Helper functions ──────────────────────────────────────────
+def classify_tile():
+    col   = color.get_color()
+    light = color.get_reflected_light_intensity()
+    if light >= SILVER_THRESHOLD:
+        return 'silver'
+    elif col in ('green', 'yellow'):
+        return 'unharmed'
+    elif col == 'red':
+        return 'harmed'
+    elif col == 'black' and light < 15:
+        return 'hazard'
+    return 'floor'
+
+def signal_victim(v):
+    drive.stop()
+    if v == 'unharmed':
+        hub.light_matrix.show_image('HAPPY')
+        hub.speaker.beep(80, 0.3)
+        hub.speaker.beep(90, 0.3)
+    elif v == 'harmed':
+        hub.light_matrix.show_image('SAD')
+        hub.speaker.beep(50, 0.6)
+    wait_for_seconds(1.0)
+    hub.light_matrix.off()
+
+def handle_victim(v):
+    global unharmed_count, harmed_count
+    if v == 'unharmed':
+        unharmed_count += 1
+    elif v == 'harmed':
+        harmed_count += 1
+    signal_victim(v)
+
+def show_final_count():
+    total = unharmed_count + harmed_count
+    hub.light_matrix.write('U' + str(unharmed_count))
+    wait_for_seconds(2)
+    hub.light_matrix.write('H' + str(harmed_count))
+    wait_for_seconds(2)
+    hub.light_matrix.write('T' + str(total))
+    wait_for_seconds(3)
+
+def enter_evac():
+    hub.light_matrix.show_image('STAR')
+    hub.speaker.beep(90, 0.3)
+    hub.speaker.beep(90, 0.3)
+    wait_for_seconds(0.5)
+    drive.move(40, 'cm', steering=0, speed=40)
+    drive.stop()
+    show_final_count()
+
+# ── Main program ──────────────────────────────────────────────
+hub.light_matrix.show_image('HAPPY')
+hub.left_button.wait_until_pressed()
+hub.light_matrix.show_image('GO')
+
+while True:
+    tile = classify_tile()
+
+    if tile == 'silver':
+        enter_evac()
+        break
+    elif tile in ('unharmed', 'harmed'):
+        handle_victim(tile)
+    elif tile == 'hazard':
+        drive.move(-15, 'cm', steering=0, speed=40)
+        drive.move_tank(TURN_DEGREES, 'degrees',
+                        left_speed=50, right_speed=-50)
+        continue
+
+    f = front.get_distance_cm()
+    l = left.get_distance_cm()
+
+    if f is not None and f < FRONT_STOP:
+        drive.stop()
+        drive.move_tank(TURN_DEGREES, 'degrees',
+                        left_speed=50, right_speed=-50)
+    elif l is None or l > LEFT_MAX:
+        drive.start(steering=-30, speed=DRIVE_SPEED)
+    elif l < LEFT_MIN:
+        drive.start(steering=30, speed=DRIVE_SPEED)
+    else:
+        drive.start(steering=0, speed=DRIVE_SPEED)
+
+    wait_for_seconds(0.05)</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-bonuses">&#8592; Score Bonuses</button>
+        <button class="next-btn" data-goto="maze-checklist">Next: Competition Checklist &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== CHECKLIST ==================== -->
+    <section class="page maze-page" id="maze-checklist">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">Pre-Run</div>
+        <h1 class="mod-title">Competition Checklist</h1>
+        <p class="mod-subtitle">Run through every item before each attempt. Missing one step can cost your entire score.</p>
+      </div>
+
+      <div class="checklist-group">
+        <div class="checklist-group-title">&#9889; Hardware</div>
+        <div class="checklist-items">
+          <div class="checklist-item"><div class="check-box"></div><span>All motors attached firmly and ports wired correctly (A = left drive, B = right drive)</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Colour sensor pointing straight down, 5–10 mm above the floor, no obstructions</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Front and side distance sensors face the correct direction with a clear line of sight</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Hub battery charged — battery indicator visible at startup</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>No loose LEGO pieces that could fall and jam the wheels</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Robot fits within the 30 cm × 30 cm start tile footprint</span></div>
+        </div>
+      </div>
+
+      <div class="checklist-group">
+        <div class="checklist-group-title">&#128013; Software</div>
+        <div class="checklist-items">
+          <div class="checklist-item"><div class="check-box"></div><span>Latest program loaded on the hub (not a test or backup version)</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span><code>SILVER_THRESHOLD</code> calibrated on the actual arena silver tile</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span><code>TURN_DEGREES</code> tuned so the robot turns exactly 90° on the competition surface</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Victim colours tested with real victim papers under competition lighting</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Hazard detection tested — robot reverses before going over the tile edge</span></div>
+        </div>
+      </div>
+
+      <div class="checklist-group">
+        <div class="checklist-group-title">&#127937; Before Each Run</div>
+        <div class="checklist-items">
+          <div class="checklist-item"><div class="check-box"></div><span>Restart the program fresh — victim counters must start at zero</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Place robot in start tile facing the correct direction (usually facing the first corridor)</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Hands completely off the robot before pressing the start button</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Confirm with the judge that you are ready before starting</span></div>
+        </div>
+      </div>
+
+      <div class="checklist-group">
+        <div class="checklist-group-title">&#128291; After the Run</div>
+        <div class="checklist-items">
+          <div class="checklist-item"><div class="check-box"></div><span>Note your final victim count and compare to the judge's score sheet</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Record which tiles the robot visited for next-run improvement</span></div>
+          <div class="checklist-item"><div class="check-box"></div><span>Write down any unexpected turns, missed victims, or detection errors to fix in code</span></div>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-python">&#8592; Python Lessons</button>
+        <button class="next-btn" data-goto="maze-resources">Next: Resources &#8594;</button>
+      </div>
+    </section>
+
+    <!-- ==================== RESOURCES ==================== -->
+    <section class="page maze-page" id="maze-resources">
+      <div class="module-header">
+        <div class="mod-badge mod-badge--maze">Reference</div>
+        <h1 class="mod-title">Resources</h1>
+        <p class="mod-subtitle">Official rules, SPIKE documentation, and useful references for competition prep.</p>
+      </div>
+
+      <h2 class="section-title">Official Competition Links</h2>
+      <div class="resource-grid">
+        <a class="resource-card" href="https://rescue.robocup.org/maze/" target="_blank" rel="noopener">
+          <div class="resource-card-title">RoboCup Rescue Maze</div>
+          <div class="resource-card-desc">Official RoboCup Rescue Maze page — rules, arena specs, and international results.</div>
+          <div class="resource-ext">rescue.robocup.org &#8599;</div>
+        </a>
+        <a class="resource-card" href="https://junior.robocup.org/robocupjunior-rescue-maze/" target="_blank" rel="noopener">
+          <div class="resource-card-title">RoboCupJunior Rescue Maze</div>
+          <div class="resource-card-desc">The junior division page with the current rules document and technical challenge overview.</div>
+          <div class="resource-ext">junior.robocup.org &#8599;</div>
+        </a>
+      </div>
+
+      <h2 class="section-title" style="margin-top:28px">LEGO SPIKE Documentation</h2>
+      <div class="resource-grid">
+        <a class="resource-card" href="https://spike.legoeducation.com/" target="_blank" rel="noopener">
+          <div class="resource-card-title">SPIKE Prime App</div>
+          <div class="resource-card-desc">Download the official SPIKE app for Blocks, Word Blocks, and Python programming on Windows and Mac.</div>
+          <div class="resource-ext">spike.legoeducation.com &#8599;</div>
+        </a>
+        <a class="resource-card" href="https://education.lego.com/en-us/support/spike-prime/teacher-resources" target="_blank" rel="noopener">
+          <div class="resource-card-title">SPIKE Python API Reference</div>
+          <div class="resource-card-desc">Official Python API docs for MotorPair, ColorSensor, DistanceSensor, PrimeHub, and more.</div>
+          <div class="resource-ext">education.lego.com &#8599;</div>
+        </a>
+      </div>
+
+      <h2 class="section-title" style="margin-top:28px">Quick API Reference</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Method</th><th>What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>drive.move(cm, 'cm', steering, speed)</code></td><td>Move a set distance (negative = reverse)</td></tr>
+            <tr><td><code>drive.move_tank(deg, 'degrees', left_speed, right_speed)</code></td><td>Spin each motor independently for turns</td></tr>
+            <tr><td><code>drive.start(steering, speed)</code></td><td>Start moving continuously (no fixed distance)</td></tr>
+            <tr><td><code>drive.stop()</code></td><td>Stop both drive motors</td></tr>
+            <tr><td><code>color.get_color()</code></td><td>Returns colour name string or None</td></tr>
+            <tr><td><code>color.get_reflected_light_intensity()</code></td><td>Returns 0–100 (100 = very bright/reflective)</td></tr>
+            <tr><td><code>sensor.get_distance_cm()</code></td><td>Distance in cm, or None if out of range</td></tr>
+            <tr><td><code>hub.motion_sensor.get_yaw_angle()</code></td><td>Current heading in degrees (gyro)</td></tr>
+            <tr><td><code>hub.light_matrix.show_image('HAPPY')</code></td><td>Show a named image on the 5×5 LED matrix</td></tr>
+            <tr><td><code>hub.light_matrix.write('3')</code></td><td>Display text or a number on the LED matrix</td></tr>
+            <tr><td><code>hub.speaker.beep(pitch, seconds)</code></td><td>Play a tone at the given pitch for given seconds</td></tr>
+            <tr><td><code>wait_for_seconds(t)</code></td><td>Pause execution for t seconds</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="nav-btns">
+        <button class="prev-btn" data-goto="maze-checklist">&#8592; Competition Checklist</button>
+        <button class="next-btn" data-goto="maze-home">&#8962; Back to Mission Control &#8594;</button>
+      </div>
+    </section>
+
+  </main>
+</div><!-- end #maze-course -->
 
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
