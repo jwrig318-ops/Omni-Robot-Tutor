@@ -1,10 +1,17 @@
-# [Project name]
+# Omni Robot Tutor
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An interactive learning platform that teaches a 16-year-old to code an X-configuration
+omni-wheel robot in MicroPython on a Raspberry Pi Pico. Nine progressive modules cover
+motor control, PWM, Python classes, omni kinematics, UART sensor parsing, trig, IMU
+heading hold, and a final autonomous ball-chasing program.
+
+**Live app:** https://omni-robot-tutor.replit.app/
+**Repo:** https://github.com/jwrig318-ops/Omni-Robot-Tutor
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/omni-v2 run dev` — run the front-end dev server
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
@@ -19,27 +26,65 @@ _Replace the heading above with the project's name, and this line with one sente
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
+- Front-end: static Vite + plain HTML/CSS/JS (no React in production site)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/omni-v2/index.html` — all 9 lesson modules, wiring diagrams, SVG motor layout
+- `artifacts/omni-v2/public/styles.css` — dark theme, wiring section, motor layout CSS
+- `artifacts/omni-v2/public/app.js` — syntax highlighting, nav, progress, copy buttons
+- `artifacts/api-server/src/routes/progress.ts` — GET/POST /api/progress
+- `lib/db/src/schema/progress.ts` — module_progress table (DB source of truth)
+- `lib/api-spec/openapi.yaml` — OpenAPI 3.1 spec (API contract source of truth)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- All lesson content lives in a single `index.html` SPA (no bundler for the site itself).
+  This keeps the teaching focus on MicroPython, not web tooling.
+- Progress is tracked server-side (PostgreSQL via session cookie) so the student can
+  resume across devices without creating an account.
+- Wiring diagrams are inline SVGs — no external image hosting needed, loads instantly.
+- The Motor class uses `pin_a = IN1, pin_b = IN2` convention throughout all nine lessons
+  so pin assignments never vary between modules.
+- DRV8871 is used exclusively (two PWM inputs); L298N / direction-pin / HIGH-LOW patterns
+  are intentionally absent from all code examples.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Nine-module interactive course covering:
+1. One motor, one direction — first PWM blink equivalent
+2. Refactor to a helper function — code reuse intro
+3. All four motors, tested forward pattern
+4. Motor class — Python OOP fundamentals
+5. OmniRobot class + `drive_xy_rot` — full kinematics
+6. `drive_angle` — sin/cos applied to robot movement
+7. Ball sensor ring — UART parsing
+8. BNO055 IMU — I2C, gyro heading hold
+9. Final program — autonomous ball chasing with heading correction
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Target reader is a 16-year-old; keep explanations clear and jargon-light.
+- DRV8871 two-PWM pattern only — never introduce direction-pin drivers (L298N, etc.).
+- All code examples must be copyable plain Python (no line numbers, no shell prompts).
+- Motor pin assignments are fixed: M1 GP11/GP10, M2 GP13/GP12, M3 GP15/GP14, M4 GP18/GP19.
+- Positive command = IN1=duty, IN2=0. Negative command = IN1=0, IN2=duty.
+- UART Pico TX=GP8 → device RX; Pico RX=GP9 ← device TX. Always state direction explicitly.
+- IMU BNO055 on I2C0: SDA=GP0, SCL=GP1.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `pnpm run build` requires `PORT` and `BASE_PATH` env vars (set by workflow); use
+  `pnpm --filter @workspace/<slug> run typecheck` for static checks from the shell instead.
+- The front-end site (`artifacts/omni-v2`) is a static Vite build — the `src/` React
+  scaffold exists but the production site is pure `index.html` + `public/`. Do not confuse the two.
+- Motor formula signs are tested: right-side motors (M1/M2) get negative for forward,
+  left-side (M3/M4) get positive for forward. Do not flip the sign convention.
+- `@replit/connectors-sdk` is installed at the workspace root for the GitHub integration
+  used by the agent to push code; it is not a runtime dependency of any artifact.
 
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Full wiring tables and motor layout diagram live in the Wiring Reference section of
+  `artifacts/omni-v2/index.html` (search for `id="wiring"`)
