@@ -400,5 +400,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   initReset();
   updateProgressUI(state);
 
-  showCourse('hub');
+  const hash = window.location.hash;
+  if (hash === '#maze') showCourse('maze');
+  else if (hash === '#omni') showCourse('omni');
+  else showCourse('hub');
 });
