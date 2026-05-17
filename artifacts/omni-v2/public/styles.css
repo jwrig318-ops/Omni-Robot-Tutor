@@ -1892,3 +1892,46 @@ body {
   text-transform: uppercase;
 }
 
+
+/* ── Maze Asset Galleries ────────────────────────────────── */
+.maze-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.maze-fig {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.maze-fig img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  background: #111827;
+}
+.maze-fig figcaption {
+  padding: .45rem .75rem;
+  font-size: .76rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  line-height: 1.4;
+}
+.maze-fig--wide { grid-column: 1 / -1; }
+.maze-gallery--2col { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.maze-gallery--3col { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.maze-solo-img {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: block;
+  margin: 1.25rem 0;
+  background: #111827;
+}
