@@ -1,12 +1,12 @@
 /* ============================================================
-   Omni V2 Learning Platform — app.js
-   Handles: navigation, progress, localStorage, copy buttons,
-            Python syntax highlighting
+   Robotics Academy — app.js
+   Handles: hub routing, omni/maze navigation, progress tracking,
+            copy buttons, Python syntax highlighting
    Plain ES6 — no frameworks, no external libs, no build step
    ============================================================ */
 
-const STORAGE_KEY = 'omniV2Progress';
-const TOTAL = 9;
+const STORAGE_KEY      = 'omniV2Progress';
+const TOTAL            = 9;
 const API_PROGRESS_URL = '/api/progress';
 
 /* ── Python syntax highlighter ───────────────────────────── */
@@ -39,7 +39,6 @@ function highlightPython(raw) {
   while (i < n) {
     const c = raw[i];
 
-    // Triple-quoted strings
     if ((c === '"' && raw.slice(i, i + 3) === '"""') ||
         (c === "'" && raw.slice(i, i + 3) === "'''")) {
       const q = raw.slice(i, i + 3);
@@ -49,7 +48,6 @@ function highlightPython(raw) {
       out += sp('str', raw.slice(i, j));
       i = j; prevKw = ''; continue;
     }
-    // Single-quoted strings
     if (c === '"' || c === "'") {
       const q = c;
       let j = i + 1;
@@ -61,55 +59,43 @@ function highlightPython(raw) {
       out += sp('str', raw.slice(i, j));
       i = j; prevKw = ''; continue;
     }
-    // Comments
     if (c === '#') {
       let j = i + 1;
       while (j < n && raw[j] !== '\n') j++;
       out += sp('cm', raw.slice(i, j));
       i = j; prevKw = ''; continue;
     }
-    // Numbers
     if (/[0-9]/.test(c) || (c === '.' && i + 1 < n && /[0-9]/.test(raw[i + 1]))) {
       let j = i;
       while (j < n && /[0-9a-fA-FxXoObB._]/.test(raw[j])) j++;
       out += sp('num', raw.slice(i, j));
       i = j; prevKw = ''; continue;
     }
-    // Identifiers (keywords, self, function names, builtins, plain)
     if (/[a-zA-Z_]/.test(c)) {
       let j = i;
       while (j < n && /[a-zA-Z0-9_]/.test(raw[j])) j++;
       const word = raw.slice(i, j);
-      // peek past spaces to find the next non-space char
       let k = j;
       while (k < n && raw[k] === ' ') k++;
       const nx = raw[k];
 
       if (KW.has(word)) {
-        out += sp('kw', word);
-        prevKw = word;
+        out += sp('kw', word); prevKw = word;
       } else if (word === 'self') {
-        out += sp('self', word);
-        prevKw = '';
+        out += sp('self', word); prevKw = '';
       } else if (prevKw === 'def') {
-        out += sp('fn', word);
-        prevKw = '';
+        out += sp('fn', word); prevKw = '';
       } else if (prevKw === 'class') {
-        out += sp('cls', word);
-        prevKw = '';
+        out += sp('cls', word); prevKw = '';
       } else if (nx === '(') {
-        out += sp('fn', word);
-        prevKw = '';
+        out += sp('fn', word); prevKw = '';
       } else if (BN.has(word)) {
-        out += sp('fn', word);
-        prevKw = '';
+        out += sp('fn', word); prevKw = '';
       } else {
-        out += esc(word);
-        prevKw = '';
+        out += esc(word); prevKw = '';
       }
       i = j; continue;
     }
-    // Newline resets keyword context so it doesn't bleed across lines
     if (c === '\n') prevKw = '';
     out += esc(c);
     i++;
@@ -118,8 +104,7 @@ function highlightPython(raw) {
 }
 
 function initSyntaxHighlight() {
-  document.querySelectorAll('.code-block').forEach(function (pre) {
-    // Store raw text BEFORE replacing innerHTML — copy button reads dataset.raw
+  document.querySelectorAll('.code-block').forEach(function(pre) {
     const raw = pre.textContent;
     pre.dataset.raw = raw;
     pre.innerHTML = highlightPython(raw);
@@ -131,24 +116,18 @@ function loadLocalProgress() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
-  } catch (_) {
-    return {};
-  }
+  } catch (_) { return {}; }
 }
 
 function saveLocalProgress(state) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (_) {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
 }
 
-/* ── Merge: OR-combine both sides so no completed module is lost ── */
+/* ── Merge ────────────────────────────────────────────────── */
 function mergeProgress(local, remote) {
   const merged = {};
   const allKeys = new Set(Object.keys(local).concat(Object.keys(remote)));
-  allKeys.forEach(function (k) {
-    merged[k] = !!(local[k] || remote[k]);
-  });
+  allKeys.forEach(function(k) { merged[k] = !!(local[k] || remote[k]); });
   return merged;
 }
 
@@ -159,9 +138,7 @@ async function fetchServerProgress() {
     if (!res.ok) return {};
     const data = await res.json();
     return data.modules || {};
-  } catch (_) {
-    return {};
-  }
+  } catch (_) { return {}; }
 }
 
 async function pushServerProgress(state) {
@@ -175,26 +152,56 @@ async function pushServerProgress(state) {
   } catch (_) {}
 }
 
-/* ── Navigation ──────────────────────────────────────────── */
+/* ── COURSE HUB ROUTING ──────────────────────────────────── */
+let activeCourse = 'hub';
+
+function showCourse(course) {
+  activeCourse = course;
+  const hubEl  = document.getElementById('course-hub');
+  const omniEl = document.getElementById('omni-course');
+  const mazeEl = document.getElementById('maze-course');
+  if (hubEl)  hubEl.style.display  = course === 'hub'  ? '' : 'none';
+  if (omniEl) omniEl.style.display = course === 'omni' ? '' : 'none';
+  if (mazeEl) mazeEl.style.display = course === 'maze' ? '' : 'none';
+  closeSidebar();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (course === 'omni') showPage('home');
+  if (course === 'maze') showMazePage('maze-home');
+}
+
+window.goToCourse = showCourse;
+
+/* ── OMNI navigation ─────────────────────────────────────── */
 let currentPage = 'home';
 
 function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#omni-course .page').forEach(p => p.classList.remove('active'));
   const target = document.getElementById(id);
-  if (target) {
-    target.classList.add('active');
-    currentPage = id;
-  }
-
-  document.querySelectorAll('.nav-item').forEach(a => {
-    a.classList.toggle('active', a.dataset.target === id);
-  });
-
+  if (target) { target.classList.add('active'); currentPage = id; }
+  document.querySelectorAll('#omni-course .nav-item').forEach(a =>
+    a.classList.toggle('active', a.dataset.target === id)
+  );
   window.scrollTo({ top: 0, behavior: 'instant' });
   closeSidebar();
 }
 
-window.goTo = function (id) { showPage(id); };
+window.goTo = function(id) { showPage(id); };
+
+/* ── MAZE navigation ─────────────────────────────────────── */
+let currentMazePage = 'maze-home';
+
+function showMazePage(id) {
+  document.querySelectorAll('#maze-course .maze-page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) { target.classList.add('active'); currentMazePage = id; }
+  document.querySelectorAll('#maze-course .nav-item').forEach(a =>
+    a.classList.toggle('active', a.dataset.target === id)
+  );
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  closeSidebar();
+}
+
+window.goToMaze = function(id) { showMazePage(id); };
 
 /* ── Progress ────────────────────────────────────────────── */
 function updateProgressUI(state) {
@@ -212,27 +219,24 @@ function updateProgressUI(state) {
   if (tbPct)  tbPct.textContent  = pct + '%';
 
   for (let i = 1; i <= TOTAL; i++) {
-    const check = document.querySelector('.nav-check[data-module="' + i + '"]');
+    const check = document.querySelector('#omni-course .nav-check[data-module="' + i + '"]');
     if (check) {
       check.textContent = state[i] ? '✓' : '○';
       check.classList.toggle('done', !!state[i]);
     }
-    const box = document.querySelector('.module-check[data-module="' + i + '"]');
+    const box = document.querySelector('#omni-course .module-check[data-module="' + i + '"]');
     if (box) box.checked = !!state[i];
   }
 
   const banner = document.getElementById('finish-banner');
-  if (banner) {
-    banner.classList.toggle('visible', done === TOTAL);
-  }
+  if (banner) banner.classList.toggle('visible', done === TOTAL);
 }
 
 function initCheckboxes(state) {
-  document.querySelectorAll('.module-check').forEach(function (cb) {
+  document.querySelectorAll('#omni-course .module-check').forEach(function(cb) {
     const num = parseInt(cb.dataset.module, 10);
     cb.checked = !!state[num];
-
-    cb.addEventListener('change', function () {
+    cb.addEventListener('change', function() {
       state[num] = cb.checked;
       saveLocalProgress(state);
       updateProgressUI(state);
@@ -243,25 +247,17 @@ function initCheckboxes(state) {
 
 /* ── Copy Code ───────────────────────────────────────────── */
 function initCopyButtons() {
-  document.querySelectorAll('.copy-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
+  document.querySelectorAll('.copy-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
       const targetId = btn.dataset.copyTarget;
       const preEl    = document.getElementById(targetId);
       if (!preEl) return;
-
-      // dataset.raw is set by initSyntaxHighlight — always plain Python, no markup
       const text = preEl.dataset.raw || preEl.textContent;
-
-      navigator.clipboard.writeText(text).then(function () {
+      navigator.clipboard.writeText(text).then(function() {
         btn.textContent = '✓ Copied!';
         btn.classList.add('copied');
-        setTimeout(function () {
-          btn.textContent = 'Copy Code';
-          btn.classList.remove('copied');
-        }, 1800);
-      }).catch(function () {
-        fallbackCopy(text, btn);
-      });
+        setTimeout(function() { btn.textContent = 'Copy Code'; btn.classList.remove('copied'); }, 1800);
+      }).catch(function() { fallbackCopy(text, btn); });
     });
   });
 }
@@ -271,75 +267,100 @@ function fallbackCopy(text, btn) {
   ta.value = text;
   ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
   document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
+  ta.focus(); ta.select();
   try {
     document.execCommand('copy');
-    btn.textContent = '✓ Copied!';
-    btn.classList.add('copied');
-    setTimeout(function () {
-      btn.textContent = 'Copy Code';
-      btn.classList.remove('copied');
-    }, 1800);
+    btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy Code'; btn.classList.remove('copied'); }, 1800);
   } catch (_) {
     btn.textContent = 'Error';
-    setTimeout(function () { btn.textContent = 'Copy Code'; }, 1500);
+    setTimeout(function() { btn.textContent = 'Copy Code'; }, 1500);
   }
   document.body.removeChild(ta);
 }
 
 /* ── Mobile sidebar ──────────────────────────────────────── */
 function closeSidebar() {
-  const sidebar  = document.getElementById('sidebar');
-  const overlay  = document.getElementById('sidebar-overlay');
-  if (sidebar)  sidebar.classList.remove('open');
-  if (overlay)  overlay.classList.remove('visible');
+  ['sidebar', 'maze-sidebar'].forEach(function(id) {
+    const s = document.getElementById(id);
+    if (s) s.classList.remove('open');
+  });
+  const overlay = document.getElementById('sidebar-overlay');
+  if (overlay) overlay.classList.remove('visible');
 }
 
 function initMobile() {
-  const hamburger = document.getElementById('hamburger');
-  const sidebar   = document.getElementById('sidebar');
-  const overlay   = document.getElementById('sidebar-overlay');
+  const overlay = document.getElementById('sidebar-overlay');
 
-  if (hamburger) {
-    hamburger.addEventListener('click', function () {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('visible');
+  [['hamburger', 'sidebar'], ['maze-hamburger', 'maze-sidebar']].forEach(function(pair) {
+    const btn = document.getElementById(pair[0]);
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      const sb = document.getElementById(pair[1]);
+      if (sb) sb.classList.toggle('open');
+      if (overlay) overlay.classList.toggle('visible');
     });
-  }
+  });
 
-  if (overlay) {
-    overlay.addEventListener('click', closeSidebar);
-  }
+  if (overlay) overlay.addEventListener('click', closeSidebar);
 }
 
-/* ── Module card clicks (home grid) ─────────────────────── */
+/* ── Module card clicks ──────────────────────────────────── */
 function initModuleCards() {
-  document.querySelectorAll('.module-card').forEach(function (card) {
-    card.addEventListener('click', function () {
+  document.querySelectorAll('#omni-course .module-card').forEach(function(card) {
+    card.addEventListener('click', function() {
       const id = card.dataset.goto;
       if (id) showPage(id);
+    });
+  });
+  document.querySelectorAll('#maze-course .module-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      const id = card.dataset.goto;
+      if (id) showMazePage(id);
     });
   });
 }
 
 /* ── Next / back buttons ─────────────────────────────────── */
 function initNavButtons() {
-  document.querySelectorAll('.next-btn, .prev-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const id = btn.dataset.goto;
-      if (id) showPage(id);
-    });
+  document.querySelectorAll('#omni-course .next-btn, #omni-course .prev-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { const id = btn.dataset.goto; if (id) showPage(id); });
+  });
+  document.querySelectorAll('#maze-course .next-btn, #maze-course .prev-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { const id = btn.dataset.goto; if (id) showMazePage(id); });
   });
 }
 
 /* ── Nav link clicks ─────────────────────────────────────── */
 function initNavLinks() {
-  document.querySelectorAll('.nav-item').forEach(function (a) {
-    a.addEventListener('click', function (e) {
+  document.querySelectorAll('#omni-course .nav-item').forEach(function(a) {
+    a.addEventListener('click', function(e) {
       e.preventDefault();
       const id = a.dataset.target;
       if (id) showPage(id);
+    });
+  });
+  document.querySelectorAll('#maze-course .nav-item').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      const id = a.dataset.target;
+      if (id) showMazePage(id);
+    });
+  });
+}
+
+/* ── Hub card clicks ─────────────────────────────────────── */
+function initHubCards() {
+  document.querySelectorAll('.hub-card[data-course]').forEach(function(card) {
+    card.addEventListener('click', function() {
+      const course = card.dataset.course;
+      if (course) showCourse(course);
+    });
+  });
+  document.querySelectorAll('[data-hub-back]').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      showCourse('hub');
     });
   });
 }
@@ -348,28 +369,23 @@ function initNavLinks() {
 function initReset() {
   const btn = document.getElementById('reset-btn');
   if (!btn) return;
-
-  btn.addEventListener('click', function () {
-    if (!confirm('Reset all progress? This cannot be undone.')) return;
+  btn.addEventListener('click', function() {
+    if (!confirm('Reset all Omni course progress? This cannot be undone.')) return;
     const state = {};
     saveLocalProgress(state);
     pushServerProgress(state);
     updateProgressUI(state);
-    document.querySelectorAll('.module-check').forEach(function (cb) {
-      cb.checked = false;
-    });
+    document.querySelectorAll('#omni-course .module-check').forEach(function(cb) { cb.checked = false; });
   });
 }
 
 /* ── Boot ────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', async function () {
-  // Highlight first so dataset.raw is set before copy buttons are used
+document.addEventListener('DOMContentLoaded', async function() {
   initSyntaxHighlight();
 
   const local  = loadLocalProgress();
   const remote = await fetchServerProgress();
-
-  const state = mergeProgress(local, remote);
+  const state  = mergeProgress(local, remote);
 
   saveLocalProgress(state);
   pushServerProgress(state);
@@ -377,11 +393,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   initNavLinks();
   initModuleCards();
   initNavButtons();
+  initHubCards();
   initCheckboxes(state);
   initCopyButtons();
   initMobile();
   initReset();
   updateProgressUI(state);
 
-  showPage('home');
+  showCourse('hub');
 });
