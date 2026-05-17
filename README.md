@@ -97,13 +97,18 @@ s4 = ( y + x) + rot   # M4 front-left
 > is the tested working configuration. The `imu_bno055.py` helper (Module 8) handles this
 > automatically — do not swap in `I2C(0, ...)` without testing on real hardware first.
 
-### Ball sensor ring / Nextion — UART1, 9600 baud
+### Ball sensor ring / Nextion display — UART1, 9600 baud
 
 | Signal          | Pico pin | Direction                     |
 |-----------------|----------|-------------------------------|
 | TX (Pico sends) | GP8      | Pico TX GP8 → device RX       |
 | RX (Pico reads) | GP9      | Pico RX GP9 ← device TX       |
 | Ground          | GND      | Shared rail                   |
+
+> **UART1 is shared.** The ball sensor ring (Modules 7 & 9) and the Nextion display both
+> use UART1 at GP8/GP9. Use one OR the other per session during development.
+> If both are needed simultaneously in the final robot, move the Nextion to
+> **UART0 on GP16 (TX) / GP17 (RX)** — no conflicts with existing motor or IMU pins.
 
 ---
 

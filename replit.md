@@ -72,6 +72,21 @@ Nine-module interactive course covering:
 - UART Pico TX=GP8 → device RX; Pico RX=GP9 ← device TX. Always state direction explicitly.
 - IMU BNO055 on GP0/GP1: use `SoftI2C(sda=Pin(0), scl=Pin(1), freq=10000)` — hardware I2C scans 0x28 but fails register reads with EIO on this setup. The `imu_bno055.py` helper handles this automatically.
 
+## Nextion Display (Bonus section)
+
+The site includes a "Nextion Display" bonus section (not a numbered module) accessible from the
+sidebar and home grid. It covers:
+- Display UI mockup SVG (dark navy/neon style matching the site)
+- Wiring: Pico UART1 GP8 TX → Nextion RX, GP9 RX ← Nextion TX, 9600 baud, 5V display supply
+- Software links: Nextion Editor, nextion.tech, instruction set
+- Embedded YouTube walkthrough video
+- Step-by-step setup tutorial (8 steps)
+- MicroPython code: `nextion_send()` helper, text/page update examples, full demo, Module 9 integration snippet
+- Troubleshooting cards (4 common issues)
+
+**UART1 sharing:** GP8/GP9 is shared between the ball sensor (Modules 7 & 9) and the Nextion
+display. For simultaneous use, move Nextion to UART0 GP16/GP17.
+
 ## Gotchas
 
 - `pnpm run build` requires `PORT` and `BASE_PATH` env vars (set by workflow); use

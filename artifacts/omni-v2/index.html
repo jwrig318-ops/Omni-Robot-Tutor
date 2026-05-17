@@ -82,6 +82,10 @@
         <span class="nav-icon">&#9889;</span>
         <span class="nav-label">Wiring Reference</span>
       </a>
+      <a class="nav-item" href="#" data-target="nextion">
+        <span class="nav-icon">&#128250;</span>
+        <span class="nav-label">Nextion Display</span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -261,6 +265,11 @@
           <span class="mc-num mc-ref">REF</span>
           <h3>Wiring Reference</h3>
           <p>Pin maps, motor arrangement diagram, DRV8871 notes, and power/grounding rules.</p>
+        </div>
+        <div class="module-card" data-goto="nextion">
+          <span class="mc-num mc-ref" style="background:rgba(196,132,252,0.15);color:#c084fc;border-color:rgba(196,132,252,0.3)">EXT</span>
+          <h3>Nextion Display</h3>
+          <p>Add a touchscreen status panel showing live heading, ball angle, drive mode, and battery.</p>
         </div>
       </div>
 
@@ -1981,6 +1990,445 @@ while True:
           <div class="wiring-note-card">
             <h5>Shared ground</h5>
             <p>Pico GND, every DRV GND, IMU GND, and sensor connector GND must all tie to the same common rail.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- NEXTION DISPLAY — Extension / Bonus section -->
+    <section class="page" id="nextion">
+      <div class="module-header">
+        <span class="module-number" style="background:rgba(196,132,252,0.12);color:#c084fc;border-color:rgba(196,132,252,0.28)">Bonus</span>
+        <h2>Nextion Display</h2>
+        <p class="module-intro">
+          Add a small colour LCD touchscreen to show live robot status &mdash;
+          heading, ball angle, drive mode, and battery &mdash; so you can debug and
+          tune the robot without needing a laptop or serial monitor.
+        </p>
+      </div>
+
+      <!-- ── UART SHARING WARNING ── -->
+      <div class="workflow-note-box" style="border-left-color:#f5c842;border-color:rgba(245,200,66,0.25);background:rgba(245,200,66,0.05)">
+        <strong>&#9888; UART1 (GP8&nbsp;/&nbsp;GP9) is shared between the ball sensor and the Nextion display</strong>
+        <ul>
+          <li>Modules&nbsp;7&nbsp;&amp;&nbsp;9 use UART1 for the <strong>ball sensor ring</strong> on the same GP8/GP9 pins.</li>
+          <li>The Nextion display also connects to UART1 at GP8/GP9.</li>
+          <li><strong>Development &amp; testing:</strong> unplug the ball sensor and plug in the Nextion display &mdash; they share the port but not simultaneously.</li>
+          <li><strong>Need both at once?</strong> Move the Nextion to <strong>UART0 on GP16&nbsp;(TX)&nbsp;/&nbsp;GP17&nbsp;(RX)</strong>: <code>UART(0, baudrate=9600, tx=Pin(16), rx=Pin(17))</code>. GP16/GP17 have no conflicts with existing motor or IMU pins.</li>
+        </ul>
+      </div>
+
+      <!-- ── WHAT THE DISPLAY SHOWS ── -->
+      <div class="explain-box">
+        <h4>What the display shows</h4>
+        <p>
+          The Nextion acts as a live dashboard for the robot. You design pages and
+          components in the <strong>Nextion Editor</strong> on your PC, upload the
+          <code>.tft</code> file to the display, then update fields from MicroPython
+          over the serial connection. Typical fields:
+        </p>
+        <ul style="margin:8px 0 0 18px;line-height:2.1">
+          <li><strong>tHeading</strong> &mdash; current compass bearing from the BNO055 IMU</li>
+          <li><strong>tBall</strong> &mdash; angle to the ball from the IR sensor ring</li>
+          <li><strong>tMode</strong> &mdash; drive state: CHASE, HOLD, STOP, TEST &hellip;</li>
+          <li><strong>tMotor</strong> &mdash; motor activity summary (e.g. 4&nbsp;/&nbsp;4 OK)</li>
+          <li><strong>tBattery</strong> &mdash; main pack voltage</li>
+          <li><strong>tLog</strong> &mdash; last error or debug message</li>
+        </ul>
+      </div>
+
+      <!-- ── DISPLAY UI MOCKUP ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Display UI concept</div>
+        <p style="font-size:13px;color:var(--text-3);margin-bottom:14px">
+          Build this layout in Nextion Editor using the component names shown (e.g. <code>tHeading</code>).
+          The neon-on-navy theme matches your robot code style.
+        </p>
+        <svg viewBox="0 0 500 300" style="width:100%;max-width:560px;display:block;margin:0 auto 8px" role="img" aria-label="Nextion display UI mockup showing HEADING, BALL ANGLE, DRIVE MODE, BATTERY, MOTOR STATUS, and LOG fields in dark navy and neon colours">
+          <!-- Bezel -->
+          <rect x="5" y="5" width="490" height="290" rx="18" fill="#0c0e16" stroke="#343a52" stroke-width="2"/>
+          <!-- Screen BG -->
+          <rect x="17" y="17" width="466" height="266" rx="12" fill="#0d1020"/>
+          <!-- Header bar (top rounded via overlap) -->
+          <rect x="17" y="17" width="466" height="42" rx="12" fill="#161828"/>
+          <rect x="17" y="47" width="466" height="12" fill="#161828"/>
+          <!-- Header title -->
+          <text x="33" y="44" font-family="'JetBrains Mono',monospace,sans-serif" font-size="14" font-weight="700" fill="#e2e8f0" letter-spacing="0.07em">OMNI ROBOT</text>
+          <!-- Active dot -->
+          <circle cx="454" cy="38" r="7" fill="#22c55e"/>
+          <text x="440" y="42" text-anchor="end" font-family="monospace,sans-serif" font-size="9" fill="#86efac" font-weight="700">ACTIVE</text>
+          <!-- Divider -->
+          <line x1="17" y1="59" x2="483" y2="59" stroke="#2a2f42" stroke-width="1"/>
+
+          <!-- ── ROW 1 PANELS ── -->
+
+          <!-- HEADING (blue) -->
+          <rect x="23" y="65" width="148" height="90" rx="8" fill="#0f1428" stroke="#5b8fff" stroke-width="1.5"/>
+          <text x="31" y="80" font-family="monospace,sans-serif" font-size="8.5" font-weight="700" fill="#5b8fff" letter-spacing="0.09em">HEADING / IMU</text>
+          <text x="97" y="133" text-anchor="middle" font-family="'JetBrains Mono',monospace,sans-serif" font-size="36" font-weight="700" fill="#82aaff">247&#176;</text>
+          <text x="97" y="149" text-anchor="middle" font-family="monospace,sans-serif" font-size="8.5" fill="#5b8fff">SW &nbsp;&#183;&nbsp; tHeading</text>
+
+          <!-- BALL ANGLE (cyan) -->
+          <rect x="179" y="65" width="148" height="90" rx="8" fill="#091a1a" stroke="#22d3ee" stroke-width="1.5"/>
+          <text x="187" y="80" font-family="monospace,sans-serif" font-size="8.5" font-weight="700" fill="#22d3ee" letter-spacing="0.09em">BALL ANGLE</text>
+          <text x="253" y="133" text-anchor="middle" font-family="'JetBrains Mono',monospace,sans-serif" font-size="36" font-weight="700" fill="#67e8f9">135&#176;</text>
+          <text x="253" y="149" text-anchor="middle" font-family="monospace,sans-serif" font-size="8.5" fill="#22d3ee">SE &nbsp;&#183;&nbsp; tBall</text>
+
+          <!-- DRIVE MODE (green) -->
+          <rect x="335" y="65" width="148" height="90" rx="8" fill="#081508" stroke="#4ade80" stroke-width="1.5"/>
+          <text x="343" y="80" font-family="monospace,sans-serif" font-size="8.5" font-weight="700" fill="#4ade80" letter-spacing="0.09em">DRIVE MODE</text>
+          <text x="409" y="126" text-anchor="middle" font-family="'JetBrains Mono',monospace,sans-serif" font-size="22" font-weight="700" fill="#86efac">CHASE</text>
+          <text x="409" y="149" text-anchor="middle" font-family="monospace,sans-serif" font-size="8.5" fill="#4ade80">ball found &nbsp;&#183;&nbsp; tMode</text>
+
+          <!-- ── ROW 2 PANELS ── -->
+
+          <!-- BATTERY (orange) -->
+          <rect x="23" y="163" width="148" height="90" rx="8" fill="#140d06" stroke="#fb923c" stroke-width="1.5"/>
+          <text x="31" y="178" font-family="monospace,sans-serif" font-size="8.5" font-weight="700" fill="#fb923c" letter-spacing="0.09em">BATTERY</text>
+          <text x="97" y="224" text-anchor="middle" font-family="'JetBrains Mono',monospace,sans-serif" font-size="30" font-weight="700" fill="#fdba74">7.4<tspan font-size="16">V</tspan></text>
+          <!-- Battery bar -->
+          <rect x="33" y="235" width="130" height="9" rx="4" fill="#2a2f42"/>
+          <rect x="33" y="235" width="91" height="9" rx="4" fill="#fb923c"/>
+          <text x="97" y="249" text-anchor="middle" font-family="monospace,sans-serif" font-size="8.5" fill="#fb923c">70% &nbsp;&#183;&nbsp; tBattery</text>
+
+          <!-- MOTOR STATUS (yellow) -->
+          <rect x="179" y="163" width="148" height="90" rx="8" fill="#120f04" stroke="#facc15" stroke-width="1.5"/>
+          <text x="187" y="178" font-family="monospace,sans-serif" font-size="8.5" font-weight="700" fill="#facc15" letter-spacing="0.09em">MOTOR STATUS</text>
+          <text x="253" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace,sans-serif" font-size="22" font-weight="700" fill="#fde68a">4 / 4</text>
+          <text x="253" y="228" text-anchor="middle" font-family="monospace,sans-serif" font-size="10" fill="#facc15">ALL OK</text>
+          <text x="253" y="249" text-anchor="middle" font-family="monospace,sans-serif" font-size="8.5" fill="#facc15">tMotor</text>
+
+          <!-- DEBUG LOG (purple) -->
+          <rect x="335" y="163" width="148" height="90" rx="8" fill="#100a14" stroke="#c084fc" stroke-width="1.5"/>
+          <text x="343" y="178" font-family="monospace,sans-serif" font-size="8.5" font-weight="700" fill="#c084fc" letter-spacing="0.09em">LOG</text>
+          <text x="343" y="196" font-family="'JetBrains Mono',monospace,sans-serif" font-size="9" fill="#d8b4fe">&gt; IMU OK 247.0</text>
+          <text x="343" y="210" font-family="'JetBrains Mono',monospace,sans-serif" font-size="9" fill="#d8b4fe">&gt; BALL 135 SEsend</text>
+          <text x="343" y="224" font-family="'JetBrains Mono',monospace,sans-serif" font-size="9" fill="#d8b4fe">&gt; MODE CHASE</text>
+          <text x="343" y="245" font-family="monospace,sans-serif" font-size="8" fill="#c084fc">UART1 GP8/9 &nbsp;&#183;&nbsp; tLog</text>
+        </svg>
+        <p style="font-size:12px;color:var(--text-3);text-align:center;margin-top:6px">
+          Object names (<code>tHeading</code>, <code>tBall</code> &hellip;) are used directly in MicroPython: <code>nextion_send(nx, 'tHeading.txt="247"')</code>
+        </p>
+      </div>
+
+      <!-- ── WIRING DIAGRAM ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Wiring: Pico UART1 &rarr; Nextion display</div>
+        <div class="wiring-diagram">
+          <div class="wiring-diagram-title">&#128268; Wiring diagram &mdash; Pico / Pico W &harr; Nextion (UART1, TX/RX crossed)</div>
+          <svg class="wiring-svg" viewBox="0 0 600 210" xmlns="http://www.w3.org/2000/svg" aria-label="Wiring: Pico GP8 TX to Nextion RX, Pico GP9 RX from Nextion TX, GND shared, display on separate 5V supply">
+
+            <!-- Pico box -->
+            <rect x="10" y="14" width="128" height="182" rx="9" fill="#1a1e29" stroke="#343a52" stroke-width="1.5"/>
+            <text x="74" y="33" text-anchor="middle" class="wd-board-label">RASPBERRY PI</text>
+            <text x="74" y="46" text-anchor="middle" class="wd-board-label">PICO / PICO W</text>
+            <line x1="18" y1="55" x2="130" y2="55" stroke="#2a2f42" stroke-width="1"/>
+
+            <!-- Pico pins -->
+            <circle cx="138" cy="84" r="3.5" fill="#c084fc"/>
+            <text x="126" y="88" text-anchor="end" class="wd-pin-label" fill="#c084fc">GP8 TX</text>
+            <circle cx="138" cy="112" r="3.5" fill="#4ade80"/>
+            <text x="126" y="116" text-anchor="end" class="wd-pin-label" fill="#4ade80">GP9 RX</text>
+            <circle cx="138" cy="143" r="3.5" fill="#6b7280"/>
+            <text x="126" y="147" text-anchor="end" class="wd-pin-label" fill="#9aa3bc">GND</text>
+            <text x="74" y="170" text-anchor="middle" style="font-size:9px;fill:#5d6680">logic 3.3&thinsp;V</text>
+            <text x="74" y="184" text-anchor="middle" style="font-size:9px;fill:#5d6680">UART1 · 9600 baud</text>
+
+            <!-- Nextion box -->
+            <rect x="462" y="14" width="128" height="182" rx="9" fill="#1a1e29" stroke="#343a52" stroke-width="1.5"/>
+            <text x="526" y="33" text-anchor="middle" class="wd-board-label">NEXTION</text>
+            <text x="526" y="46" text-anchor="middle" class="wd-board-label">DISPLAY</text>
+            <line x1="470" y1="55" x2="582" y2="55" stroke="#2a2f42" stroke-width="1"/>
+
+            <!-- Nextion pins (RX higher, TX lower — so wires visually cross in the middle) -->
+            <circle cx="462" cy="84" r="3.5" fill="#c084fc"/>
+            <text x="474" y="88" class="wd-pin-label" fill="#c084fc">RX</text>
+            <circle cx="462" cy="112" r="3.5" fill="#4ade80"/>
+            <text x="474" y="116" class="wd-pin-label" fill="#4ade80">TX</text>
+            <circle cx="462" cy="143" r="3.5" fill="#6b7280"/>
+            <text x="474" y="147" class="wd-pin-label" fill="#9aa3bc">GND</text>
+            <circle cx="462" cy="169" r="3.5" fill="#ef4444"/>
+            <text x="474" y="173" class="wd-pin-label" fill="#f87171">VCC&thinsp;/&thinsp;5V</text>
+            <text x="526" y="190" text-anchor="middle" style="font-size:9px;fill:#5d6680">separate 5V supply</text>
+
+            <!-- CROSSED WIRES -->
+            <!-- GP8 TX → Nextion RX (purple, top wire) -->
+            <path d="M 138 84 C 250 84 350 84 462 84" stroke="#c084fc" stroke-width="2" fill="none" stroke-dasharray="none"/>
+            <!-- Nextion TX → GP9 RX (green, bottom wire) -->
+            <path d="M 462 112 C 350 112 250 112 138 112" stroke="#4ade80" stroke-width="2" fill="none"/>
+            <!-- GND (gray) -->
+            <line x1="138" y1="143" x2="462" y2="143" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+            <!-- CROSS LABEL in middle -->
+            <rect x="255" y="74" width="90" height="48" rx="5" fill="#1a1e29" stroke="#2a2f42" stroke-width="1"/>
+            <text x="300" y="89" text-anchor="middle" style="font-size:8.5px;fill:#c084fc;font-weight:700">PICO TX</text>
+            <text x="300" y="99" text-anchor="middle" style="font-size:8.5px;fill:#c084fc">&darr; Nextion RX</text>
+            <text x="300" y="111" text-anchor="middle" style="font-size:8.5px;fill:#4ade80">Nextion TX</text>
+            <text x="300" y="121" text-anchor="middle" style="font-size:8.5px;fill:#4ade80">&darr; PICO RX</text>
+
+            <!-- Power note box -->
+            <rect x="222" y="155" width="156" height="28" rx="5" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+            <text x="300" y="167" text-anchor="middle" style="font-size:8px;fill:#f87171;font-weight:700">&#9888; 5V supply for display VCC</text>
+            <text x="300" y="178" text-anchor="middle" style="font-size:8px;fill:#f87171">Do not use Pico 3V3 pin</text>
+          </svg>
+
+          <!-- Wire legend -->
+          <div class="wiring-list" style="margin-top:10px">
+            <span class="wl-item"><span class="wl-dot" style="background:#c084fc"></span>GP8 &rarr; Nextion RX &mdash; Pico UART1 TX</span>
+            <span class="wl-item"><span class="wl-dot" style="background:#4ade80"></span>Nextion TX &rarr; GP9 &mdash; Pico UART1 RX</span>
+            <span class="wl-item"><span class="wl-dot" style="background:#6b7280"></span>GND &mdash; shared ground rail (Pico + display + robot battery)</span>
+            <span class="wl-item"><span class="wl-dot" style="background:#ef4444"></span>VCC &mdash; 5&nbsp;V from a regulated supply (not Pico 3V3)</span>
+          </div>
+        </div>
+
+        <table class="pin-table">
+          <thead>
+            <tr><th>Pico pin</th><th>Direction</th><th>Nextion pin</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="t-uart">GP8</span></td>
+              <td>Pico TX &rarr;</td>
+              <td><strong>RX</strong></td>
+              <td>UART1 transmit &rarr; display receive</td>
+            </tr>
+            <tr>
+              <td><span class="t-uart">GP9</span></td>
+              <td>&larr; Pico RX</td>
+              <td><strong>TX</strong></td>
+              <td>Display transmit &rarr; UART1 receive</td>
+            </tr>
+            <tr>
+              <td><span class="t-gnd">GND</span></td>
+              <td>&mdash;</td>
+              <td><strong>GND</strong></td>
+              <td>Shared ground (Pico + display + battery)</td>
+            </tr>
+            <tr>
+              <td style="color:#f87171">&#9888; separate 5V</td>
+              <td>&mdash;</td>
+              <td><strong>VCC&thinsp;/&thinsp;5V</strong></td>
+              <td>Most Nextion models need 5V &mdash; do not use Pico VSYS or 3V3</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="wiring-note">
+          TX and RX must be <strong>crossed</strong>: Pico TX goes to display RX, and display TX comes back to Pico RX.
+          Connecting TX to TX (uncrossed) is the most common wiring mistake.
+        </p>
+      </div>
+
+      <!-- ── SOFTWARE & LINKS ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Software &amp; resources</div>
+        <div class="wiring-notes-grid">
+          <div class="wiring-note-card">
+            <h5>Nextion Editor</h5>
+            <p>Free drag-and-drop GUI designer for creating display pages and components.
+               Download at <a href="https://nextion.tech/nextion-editor/" target="_blank" rel="noopener" style="color:var(--accent)">nextion.tech/nextion-editor/</a></p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Nextion official site</h5>
+            <p>Display models, datasheets, tutorials, and community resources.
+               <a href="https://nextion.tech/" target="_blank" rel="noopener" style="color:var(--accent)">nextion.tech</a></p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Nextion instruction set</h5>
+            <p>Complete command reference &mdash; all component properties, events, and system commands.
+               <a href="https://nextion.tech/instruction-set/" target="_blank" rel="noopener" style="color:var(--accent)">nextion.tech/instruction-set/</a></p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Upload method</h5>
+            <p>Compile your <code>.hmi</code> project to a <code>.tft</code> file. Upload via SD card (rename to <code>DWIN_SET</code> on some models) or over the display's serial port using the Nextion Uploader tool.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VIDEO ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Video overview</div>
+        <div class="video-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/6Ug_UgQ4b1k"
+            title="Nextion display overview"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
+      <!-- ── SETUP TUTORIAL ── -->
+      <div class="wiring-subsec">
+        <div class="wiring-subsec-title">Setup steps</div>
+        <ol style="line-height:2.2;padding-left:22px;color:var(--text-2);font-size:14px">
+          <li>
+            <strong>Install Nextion Editor</strong> on your PC.
+            Download from <a href="https://nextion.tech/nextion-editor/" target="_blank" rel="noopener" style="color:var(--accent)">nextion.tech/nextion-editor/</a>.
+          </li>
+          <li>
+            <strong>Create a new project</strong> &mdash; choose the exact model and resolution of your display.
+            The resolution must match or nothing will render correctly.
+          </li>
+          <li>
+            <strong>Design your page</strong> with Text components (type <em>t</em>).
+            Name them exactly: <code>tHeading</code>, <code>tBall</code>, <code>tMode</code>, <code>tBattery</code>,
+            <code>tMotor</code>, <code>tLog</code>.
+            These names are what you address from MicroPython.
+          </li>
+          <li>
+            <strong>Compile and export</strong> the project to a <code>.tft</code> file using the
+            Nextion Editor compile button.
+          </li>
+          <li>
+            <strong>Upload to the display</strong> via SD card (copy the <code>.tft</code> to a FAT32 SD card and insert while powering on)
+            or via UART using the Nextion Uploader tool over USB-to-serial.
+          </li>
+          <li>
+            <strong>Wire the display to the Pico</strong> using the wiring table above.
+            Connect VCC to a regulated 5&nbsp;V supply, not Pico 3V3.
+            Share ground across Pico, display, and battery.
+          </li>
+          <li>
+            <strong>Run the serial test below</strong> on the Pico to confirm fields are updating on-screen.
+          </li>
+          <li>
+            <strong>Integrate <code>update_display()</code></strong> into your Module&nbsp;9 robot loop.
+          </li>
+        </ol>
+      </div>
+
+      <!-- ── CODE EXAMPLES ── -->
+      <div class="explain-box">
+        <h4>Core concept: three-byte terminator</h4>
+        <p>
+          Every Nextion command ends with exactly <strong>three bytes of <code>0xFF</code></strong>.
+          Forgetting them (or sending only one or two) is the most common reason the display
+          ignores commands.
+        </p>
+      </div>
+
+      <!-- nextion_send helper -->
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython &mdash; nextion_send helper</span>
+          <button class="copy-btn" data-copy-target="code-nx-a">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-add">&#10133; Add this helper function to any file that talks to the Nextion</div>
+        <pre class="code-block" id="code-nx-a">def nextion_send(uart, cmd):
+    """Send a command string followed by the three 0xFF terminators Nextion requires."""
+    uart.write(cmd.encode() + b'\xff\xff\xff')</pre>
+      </div>
+
+      <!-- Text and page updates -->
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython &mdash; update fields &amp; change pages</span>
+          <button class="copy-btn" data-copy-target="code-nx-b">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-ref">&#128210; Reference — copy the lines you need</div>
+        <pre class="code-block" id="code-nx-b">from machine import UART, Pin
+
+# UART1 GP8/GP9 — same port as ball sensor; swap between them or use UART0 GP16/GP17
+nx = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+
+# Update text fields on the display (use the exact component name from Nextion Editor)
+nextion_send(nx, 'tHeading.txt="247"')
+nextion_send(nx, 'tBall.txt="135"')
+nextion_send(nx, 'tMode.txt="CHASE"')
+nextion_send(nx, 'tBattery.txt="7.4V"')
+nextion_send(nx, 'tMotor.txt="4/4 OK"')
+nextion_send(nx, 'tLog.txt="IMU OK"')
+
+# Switch between Nextion pages
+nextion_send(nx, 'page main')    # show the main status page
+nextion_send(nx, 'page debug')   # show the debug / log page</pre>
+      </div>
+
+      <!-- Full demo program -->
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython &mdash; full display demo (main.py)</span>
+          <button class="copy-btn" data-copy-target="code-nx-c">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-replace">&#128196; Replace your whole <code style="background:none;color:inherit">main.py</code> to test the display on its own</div>
+        <pre class="code-block" id="code-nx-c">from machine import UART, Pin
+import time
+
+# Connect Nextion on UART1: GP8 TX -> Nextion RX, GP9 RX <- Nextion TX
+nx = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+
+def nextion_send(uart, cmd):
+    uart.write(cmd.encode() + b'\xff\xff\xff')
+
+def update_display(uart, heading, ball, mode, battery):
+    nextion_send(uart, 'tHeading.txt="{:.0f}"'.format(heading))
+    ball_str = "{:.0f}".format(ball) if ball is not None else "--"
+    nextion_send(uart, 'tBall.txt="{}"'.format(ball_str))
+    nextion_send(uart, 'tMode.txt="{}"'.format(mode))
+    nextion_send(uart, 'tBattery.txt="{:.1f}V"'.format(battery))
+
+# Give the display time to power up, then show the main page
+time.sleep(0.5)
+nextion_send(nx, 'page main')
+
+# Sweep heading 0-359 to test all fields update smoothly
+heading = 0.0
+while True:
+    heading = (heading + 5) % 360
+    update_display(nx, heading, 135.0, "TEST", 7.4)
+    print("Display updated: heading {:.0f}".format(heading))
+    time.sleep(0.2)</pre>
+      </div>
+
+      <!-- Module 9 integration snippet -->
+      <div class="code-block-wrap">
+        <div class="code-header">
+          <span class="code-lang">MicroPython &mdash; Module 9 integration snippet</span>
+          <button class="copy-btn" data-copy-target="code-nx-d">Copy Code</button>
+        </div>
+        <div class="code-usage-badge badge-add">&#10133; Patch into your Module&nbsp;9 <code style="background:none;color:inherit">main.py</code></div>
+        <pre class="code-block" id="code-nx-d">from machine import UART, Pin
+
+# Add near the top of main.py alongside ball_uart and imu
+# Note: if UART1 is already used for the ball sensor, use UART0 on GP16/GP17 instead:
+#   nx_uart = UART(0, baudrate=9600, tx=Pin(16), rx=Pin(17))
+nx_uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+
+def nextion_send(uart, cmd):
+    uart.write(cmd.encode() + b'\xff\xff\xff')
+
+def update_display(uart, heading, ball, mode, battery):
+    nextion_send(uart, 'tHeading.txt="{:.0f}"'.format(heading))
+    ball_str = "{:.0f}".format(ball) if ball is not None else "--"
+    nextion_send(uart, 'tBall.txt="{}"'.format(ball_str))
+    nextion_send(uart, 'tMode.txt="{}"'.format(mode))
+    nextion_send(uart, 'tBattery.txt="{:.1f}V"'.format(battery))
+
+# ── Inside your while True loop (after reading ball and IMU) ──
+# mode = "CHASE" if (ball is not None and ball != -1) else "HOLD"
+# update_display(nx_uart, current_heading, ball, mode, 7.4)</pre>
+      </div>
+
+      <!-- ── TROUBLESHOOTING ── -->
+      <div class="wiring-subsec" style="margin-top:8px">
+        <div class="wiring-subsec-title">Troubleshooting</div>
+        <div class="wiring-notes-grid">
+          <div class="wiring-note-card">
+            <h5>Nothing updates on screen</h5>
+            <p>Check: baud rate is 9600 on both sides, TX and RX are <strong>crossed</strong> (GP8 &rarr; display RX, display TX &rarr; GP9), common ground connected, and every command ends with exactly <strong>three</strong> <code>0xFF</code> bytes.</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Garbled or wrong characters</h5>
+            <p>Baud rate mismatch. Confirm the Nextion project&rsquo;s baud rate in Nextion Editor matches <code>9600</code> in the MicroPython <code>UART(..., baudrate=9600)</code> call.</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Display resets or dims</h5>
+            <p>Power supply is too weak. Most Nextion models need a stable <strong>5&nbsp;V / 500&nbsp;mA or more</strong> supply. Do not run the display from the Pico&rsquo;s VSYS or 3V3 pins.</p>
+          </div>
+          <div class="wiring-note-card">
+            <h5>Robot glitches when display is connected</h5>
+            <p>Ground or power issue. Ensure the display&rsquo;s 5&nbsp;V supply is <strong>separate</strong> from motor battery and Pico logic, and that <strong>all grounds share a common rail</strong>. A display without proper grounding can inject noise into the signal lines.</p>
           </div>
         </div>
       </div>
