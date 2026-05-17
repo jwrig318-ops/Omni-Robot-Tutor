@@ -42,9 +42,15 @@ competition checklist, and a resources page with API quick-reference.
 
 ## Where things live
 
-- `artifacts/omni-v2/index.html` — hub landing page + both full courses (~4600 lines)
-- `artifacts/omni-v2/public/styles.css` — dark theme; hub/maze/omni/utility CSS
+- `artifacts/omni-v2/index.html` — hub landing page + both full courses (~4200 lines)
+- `artifacts/omni-v2/public/styles.css` — dark theme; hub/maze/omni/utility CSS + maze gallery classes
 - `artifacts/omni-v2/public/app.js` — hub routing (showCourse), dual-course nav, progress, copy buttons
+- `artifacts/omni-v2/public/maze-assets/` — 25 image assets copied from Robo-Maze-Learn source project
+  (original source: https://replit.com/@jwrig318/Robo-Maze-Learn, extracted from `attached_assets/pptx_extracted/`)
+  Files: image1.png (RoboCup QLD logo), image3.jpg, image4–6.png (score sheets), image7–8.png (practice mazes),
+  image9–13.png/jpg (robot photos/renders), image14.png (competition arena), image15–17.png (wall-following diagrams),
+  image19–20.png, image22–23.png, image25.png (corner/navigation diagrams + block code), image26.png (maze top-down),
+  image27–28.png (victim detection flowchart + block code), image30.jpg (full maze plan)
 - `artifacts/api-server/src/routes/progress.ts` — GET/POST /api/progress
 - `lib/db/src/schema/progress.ts` — module_progress table (DB source of truth)
 - `lib/api-spec/openapi.yaml` — OpenAPI 3.1 spec (API contract source of truth)
