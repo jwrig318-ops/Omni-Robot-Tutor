@@ -2567,6 +2567,25 @@ def update_display(uart, heading, ball, mode, battery):
         <p>In RoboCup Rescue Maze your robot autonomously navigates a maze of tiles, finds coloured victim markers on the floor, and guides them to an evacuation zone — all without any human control. Work through the six modules below in order, then use the Python Lessons pathway to learn every code skill you need from scratch.</p>
       </div>
 
+      <div class="maze-gallery maze-gallery--3col">
+        <figure class="maze-fig">
+          <img src="/maze-assets/image1.png" alt="RoboCup Junior Australia Queensland logo" loading="lazy" />
+          <figcaption>RoboCup Junior Australia Queensland</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image7.png" alt="Practice maze made from paper boxes" loading="lazy" />
+          <figcaption>Practice maze — paper-box construction at home</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image8.png" alt="Open maze with wooden walls" loading="lazy" />
+          <figcaption>Training arena — wooden wall sections</figcaption>
+        </figure>
+        <figure class="maze-fig maze-fig--wide">
+          <img src="/maze-assets/image14.png" alt="Full competition maze layout" loading="lazy" />
+          <figcaption>Full competition arena — multiple levels, ramps, and victim tiles</figcaption>
+        </figure>
+      </div>
+
       <h2 class="section-title">Course Modules</h2>
       <div class="module-grid">
         <div class="module-card" data-goto="maze-challenge">
@@ -2633,6 +2652,16 @@ def update_display(uart, heading, ball, mode, battery):
       </div>
 
       <h2 class="section-title">Arena Overview</h2>
+      <div class="maze-gallery maze-gallery--2col">
+        <figure class="maze-fig">
+          <img src="/maze-assets/image26.png" alt="Top-down maze diagram showing tile layout" loading="lazy" />
+          <figcaption>Top-down view — tile layout and wall structure</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image14.png" alt="Real competition maze" loading="lazy" />
+          <figcaption>Real competition arena</figcaption>
+        </figure>
+      </div>
       <div class="info-grid">
         <div class="info-card">
           <div class="info-card-title">&#127963; Floor Tiles</div>
@@ -2691,6 +2720,22 @@ def update_display(uart, heading, ball, mode, battery):
         </table>
       </div>
 
+      <h2 class="section-title">Official Score Sheets</h2>
+      <div class="maze-gallery maze-gallery--3col">
+        <figure class="maze-fig">
+          <img src="/maze-assets/image4.png" alt="Mighty Masey scoring table" loading="lazy" />
+          <figcaption>Mighty Masey — full score sheet</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image5.png" alt="Intermediate scoring table" loading="lazy" />
+          <figcaption>Intermediate — score sheet</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image6.png" alt="Rescue kit scoring table" loading="lazy" />
+          <figcaption>Rescue Kit — score sheet</figcaption>
+        </figure>
+      </div>
+
       <div class="warn-box">
         <strong>Restart penalty:</strong> Every time you manually place the robot back, your score resets for that section. The goal is to run as far as possible without any human intervention.
       </div>
@@ -2712,6 +2757,33 @@ def update_display(uart, heading, ball, mode, battery):
       <h2 class="section-title">Your Hardware: LEGO SPIKE Prime</h2>
       <div class="explain-box">
         <p>The SPIKE Prime hub is the brain of your robot. It has a built-in gyroscope for measuring rotation, a 5 × 5 LED matrix for displaying information, and six ports for motors and sensors. You control everything in <strong>SPIKE Python</strong> — the Python environment built into the hub's firmware.</p>
+      </div>
+
+      <div class="maze-gallery maze-gallery--3col">
+        <figure class="maze-fig">
+          <img src="/maze-assets/image9.png" alt="EV3 and SPIKE Prime robots side by side" loading="lazy" />
+          <figcaption>EV3 and SPIKE Prime — both are valid competition platforms</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image12.png" alt="EV3 robot render" loading="lazy" />
+          <figcaption>LEGO Mindstorms EV3 robot</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image13.png" alt="SPIKE Prime robot render" loading="lazy" />
+          <figcaption>LEGO SPIKE Prime robot — recommended for this course</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image3.jpg" alt="EV3 robot navigating a practice maze" loading="lazy" />
+          <figcaption>Robot navigating a practice maze</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image10.jpg" alt="SPIKE USB port close-up" loading="lazy" />
+          <figcaption>SPIKE Prime USB port — used for programming</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image11.jpg" alt="SPIKE sensor connections close-up" loading="lazy" />
+          <figcaption>Sensor port connections on the hub</figcaption>
+        </figure>
       </div>
 
       <h2 class="section-title">Recommended Port Setup</h2>
@@ -2788,6 +2860,17 @@ def update_display(uart, heading, ball, mode, battery):
         <p>You need two sensors: the <strong>left distance sensor</strong> to measure the gap to the left wall, and the <strong>front distance sensor</strong> to detect walls ahead.</p>
       </div>
 
+      <div class="maze-gallery maze-gallery--2col">
+        <figure class="maze-fig">
+          <img src="/maze-assets/image15.png" alt="Robot wall distance diagram" loading="lazy" />
+          <figcaption>Sensor placement — measuring wall distance on the left and front</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image16.png" alt="Wall-following flowchart" loading="lazy" />
+          <figcaption>Basic wall-following decision flowchart</figcaption>
+        </figure>
+      </div>
+
       <h2 class="section-title">Decision Logic</h2>
       <div class="info-grid">
         <div class="info-card">
@@ -2807,6 +2890,12 @@ def update_display(uart, heading, ball, mode, battery):
           <p class="info-card-body">Left sensor 8–25 cm. Drive straight at full speed.</p>
         </div>
       </div>
+
+      <h2 class="section-title">Visual Block Code — Basic Wall Following</h2>
+      <figure class="maze-fig maze-fig--wide" style="margin-bottom:1.5rem">
+        <img src="/maze-assets/image17.png" alt="Visual block code for basic wall following" loading="lazy" />
+        <figcaption>Block-code representation of the basic wall-follower (SPIKE App)</figcaption>
+      </figure>
 
       <h2 class="section-title">Wall-Follower Starter Code</h2>
       <div class="code-block-wrap">
@@ -2857,6 +2946,34 @@ while True:
         <p><strong>Tuning tip:</strong> The constants <code>FRONT_STOP</code>, <code>LEFT_MIN</code>, <code>LEFT_MAX</code>, and <code>TURN_DEGREES</code> need adjusting for your specific robot and arena surface. Start with the values above, run the robot, and tweak one constant at a time until turns are clean and wall-following is smooth.</p>
       </div>
 
+      <h2 class="section-title">Handling Corners</h2>
+      <div class="maze-gallery maze-gallery--3col">
+        <figure class="maze-fig">
+          <img src="/maze-assets/image19.png" alt="Robot approaching a corner" loading="lazy" />
+          <figcaption>Robot approaching a corner — front sensor triggers turn</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image20.png" alt="Visual block code for turn radius" loading="lazy" />
+          <figcaption>Block-code for managing turn radius at corners</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image22.png" alt="Robot in a corner" loading="lazy" />
+          <figcaption>Robot completing a corner turn</figcaption>
+        </figure>
+      </div>
+
+      <h2 class="section-title">Full Navigation Flowchart &amp; Block Code</h2>
+      <div class="maze-gallery maze-gallery--2col">
+        <figure class="maze-fig">
+          <img src="/maze-assets/image23.png" alt="Full navigation flowchart" loading="lazy" />
+          <figcaption>Complete navigation decision flowchart</figcaption>
+        </figure>
+        <figure class="maze-fig">
+          <img src="/maze-assets/image25.png" alt="Visual block code for full navigation" loading="lazy" />
+          <figcaption>Block-code for the full navigation program</figcaption>
+        </figure>
+      </div>
+
       <h2 class="section-title">Precise Turns with the Built-in Gyro</h2>
       <div class="explain-box">
         <p>The SPIKE hub has a gyroscope you can read with <code>hub.motion_sensor.get_yaw_angle()</code>. Measuring how many degrees the robot has actually rotated gives you much more precise 90° turns than relying on a fixed wheel-degree count:</p>
@@ -2893,6 +3010,11 @@ while True:
       <div class="explain-box">
         <p>The SPIKE colour sensor shines light onto the surface and measures how much bounces back. From this it reports the <strong>colour name</strong> (red, green, yellow, black, white, blue or None) and the <strong>reflected light intensity</strong> (0 = very dark, 100 = very bright/reflective). You use both values together to classify what the robot has driven over.</p>
       </div>
+
+      <figure class="maze-fig maze-fig--wide" style="margin-bottom:1.5rem">
+        <img src="/maze-assets/image27.png" alt="Victim detection flowchart" loading="lazy" />
+        <figcaption>Victim detection decision flowchart — colour and light intensity paths</figcaption>
+      </figure>
 
       <h2 class="section-title">What Each Victim Looks Like to the Sensor</h2>
       <div class="victim-grid">
@@ -2975,6 +3097,12 @@ def check_for_victim():
         <p><strong>Important:</strong> Call <code>check_for_victim()</code> on every iteration of your navigation loop. When a victim is found, stop and give a clear signal before continuing. The judge must be able to confirm that your robot recognised each victim.</p>
       </div>
 
+      <h2 class="section-title">Visual Block Code — Victim Detection</h2>
+      <figure class="maze-fig maze-fig--wide" style="margin-bottom:1.5rem">
+        <img src="/maze-assets/image28.png" alt="Visual block code for victim detection" loading="lazy" />
+        <figcaption>Block-code for the full victim detection and signalling routine (SPIKE App)</figcaption>
+      </figure>
+
       <div class="nav-btns">
         <button class="prev-btn" data-goto="maze-navigate">&#8592; Navigate the Maze</button>
         <button class="next-btn" data-goto="maze-bonuses">Next: Score Bonuses &#8594;</button>
@@ -2988,6 +3116,12 @@ def check_for_victim():
         <h1 class="mod-title">Score Bonuses</h1>
         <p class="mod-subtitle">Avoid black hazards, find the silver tile, count victims, and enter the evacuation zone.</p>
       </div>
+
+      <h2 class="section-title">Full Competition Maze Plan</h2>
+      <figure class="maze-fig maze-fig--wide" style="margin-bottom:1.5rem">
+        <img src="/maze-assets/image30.jpg" alt="Full competition maze plan diagram" loading="lazy" />
+        <figcaption>Full competition maze plan — all tiles, ramps, victims, and evacuation zone</figcaption>
+      </figure>
 
       <h2 class="section-title">Bonus Opportunities</h2>
       <div class="info-grid">
